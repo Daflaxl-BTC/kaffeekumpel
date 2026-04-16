@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  @apply bg-kaffee-50 text-kaffee-900;
+}
+
+body {
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Bessere Tap-Highlights für Mobile */
+button {
+  -webkit-tap-highlight-color: rgba(139, 90, 43, 0.15);
+}
