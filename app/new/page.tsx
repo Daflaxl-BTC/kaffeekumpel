@@ -1,7 +1,12 @@
 import { createGroup } from "./actions";
 import { Button } from "@/components/ui/button";
 
-export default function NewGroupPage() {
+export default async function NewGroupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const sp = await searchParams;
   return (
     <main className="min-h-screen px-6 py-12 max-w-md mx-auto">
       <a
@@ -16,6 +21,13 @@ export default function NewGroupPage() {
       <p className="text-kaffee-700 mb-8">
         In 60 Sekunden fertig. Du kannst später alles ändern.
       </p>
+
+      {sp.error && (
+        <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+          <div className="font-semibold mb-1">Fehler beim Anlegen</div>
+          <div className="font-mono text-xs break-words">{sp.error}</div>
+        </div>
+      )}
 
       <form action={createGroup} className="space-y-5 bg-white/80 rounded-2xl p-6 border border-kaffee-100">
         <div>

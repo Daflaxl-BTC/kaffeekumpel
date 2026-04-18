@@ -12,61 +12,82 @@ const Schema = z.object({
   coffeePrice: z.coerce.number().min(0).max(100),
 });
 
+function isRedirectError(e: unknown): boolean {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    "digest" in e &&
+    typeof (e as { digest: unknown }).digest === "string" &&
+    ((e as { digest: string }).digest.startsWith("NEXT_REDIRECT") ||
+      (e as { digest: string }).digest === "NEXT_NOT_FOUND")
+  );
+}
+
 export async function createGroup(formData: FormData) {
-  const input = Schema.parse({
-    groupName: formData.get("groupName"),
-    myName: formData.get("myName"),
-    coffeePrice: formData.get("coffeePrice") || "0.30",
-  });
+  let targetSlug = "";
+  try {
+    const input = Schema.parse({
+      groupName: formData.get("groupName"),
+      myName: formData.get("myName"),
+      coffeePrice: formData.get("coffeePrice") || "0.30",
+    });
 
-  const sb = supabaseService();
-  const coffeePriceCents = Math.round(input.coffeePrice * 100);
+    const sb = supabaseService();
+    const coffeePriceCents = Math.round(input.coffeePrice * 100);
 
-  // Slug mit Kollisions-Retry (max 5)
-  let slug = "";
-  let groupId = "";
-  for (let i = 0; i < 5; i++) {
-    const candidate = generateSlug();
-    const { data, error } = await sb
-      .from("groups")
+    let slug = "";
+    let groupId = "";
+    for (let i = 0; i < 5; i++) {
+      const candidate = generateSlug();
+      const { data, error } = await sb
+        .from("groups")
+        .insert({
+          slug: candidate,
+          name: input.groupName,
+          coffee_price_cents: coffeePriceCents,
+        })
+        .select("id, slug")
+        .single();
+      if (!error) {
+        slug = data.slug;
+        groupId = data.id;
+        break;
+      }
+      if (error.code !== "23505") {
+        throw new Error(`DB-Fehler (groups): ${error.message}`);
+      }
+    }
+    if (!slug) throw new Error("Konnte keinen eindeutigen Slug generieren.");
+
+    const { data: member, error: memberErr } = await sb
+      .from("members")
       .insert({
-        slug: candidate,
-        name: input.groupName,
-        coffee_price_cents: coffeePriceCents,
+        group_id: groupId,
+        name: input.myName,
+        role: "admin",
       })
-      .select("id, slug")
+      .select("id, name")
       .single();
-    if (!error) {
-      slug = data.slug;
-      groupId = data.id;
-      break;
+    if (memberErr || !member) {
+      throw new Error(
+        `DB-Fehler (members): ${memberErr?.message ?? "unbekannt"}`,
+      );
     }
-    if (!error || error.code !== "23505") {
-      throw new Error(`DB-Fehler: ${error?.message ?? "unbekannt"}`);
-    }
-  }
-  if (!slug) throw new Error("Konnte keinen eindeutigen Slug generieren.");
 
-  // Felix als erster Admin
-  const { data: member, error: memberErr } = await sb
-    .from("members")
-    .insert({
+    await setSessionCookie({
       group_id: groupId,
-      name: input.myName,
-      role: "admin",
-    })
-    .select("id, name")
-    .single();
-  if (memberErr || !member) {
-    throw new Error(`Mitglied konnte nicht angelegt werden: ${memberErr?.message}`);
+      slug,
+      member_id: member.id,
+      name: member.name,
+    });
+
+    targetSlug = slug;
+  } catch (e) {
+    if (isRedirectError(e)) throw e;
+    console.error("[createGroup] failed:", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    redirect(`/new?error=${encodeURIComponent(msg.slice(0, 500))}`);
   }
 
-  await setSessionCookie({
-    group_id: groupId,
-    slug,
-    member_id: member.id,
-    name: member.name,
-  });
-
-  redirect(`/g/${slug}?welcome=1`);
+  redirect(`/g/${targetSlug}?welcome=1`);
 }
