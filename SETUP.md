@@ -50,6 +50,16 @@ openssl rand -base64 32
 
 In `.env.local` als `SESSION_SECRET=<ergebnis>` eintragen.
 
+**`ANTHROPIC_API_KEY`** (optional, aber empfohlen) — für den Monats-/Jahresrückblick-PDF. Ohne Key greifen harmlose Fallback-Texte, der Button funktioniert trotzdem. Key holen: https://console.anthropic.com/settings/keys
+
+In `.env.local`:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Modell: `claude-haiku-4-5` (schnell & günstig, ein voller Monatsrückblick für 5 Mitglieder kostet im einstelligen Cent-Bereich).
+
 ### 5. Dev-Server starten
 
 ```bash
@@ -118,7 +128,10 @@ npx vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
 npx vercel env add SUPABASE_SERVICE_ROLE_KEY production
 npx vercel env add SESSION_SECRET production
 npx vercel env add NEXT_PUBLIC_APP_URL production   # = deine kaffeekumpel.vercel.app oder custom Domain
+npx vercel env add ANTHROPIC_API_KEY production     # für den Recap-PDF
 ```
+
+**Hinweis Vercel-Deployment für den Recap-PDF:** Die Route `/api/recap/[slug]` nutzt `puppeteer-core` + `@sparticuz/chromium` und läuft im Node-Runtime. Sie ist auf `maxDuration = 60` Sekunden gesetzt, damit Claude-Calls + PDF-Render reinpassen. Wenn Vercel mit der Funktionsgröße (~50 MB) meckert: `functions: { "app/api/recap/[slug]/route.ts": { memory: 1024 } }` in `vercel.json` ergänzen.
 
 Und deployen:
 

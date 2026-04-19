@@ -10,6 +10,7 @@ import { MemberBalance } from "@/components/member-balance";
 import { CleaningBanner } from "@/components/cleaning-banner";
 import { PurchaseForm } from "@/components/purchase-form";
 import { LiveGroupView } from "@/components/live-group-view";
+import { RecapDownload } from "@/components/recap-download";
 import { Card } from "@/components/ui/card";
 
 export default async function GroupPage({
@@ -169,6 +170,10 @@ export default async function GroupPage({
             coffeePriceCents={group.coffee_price_cents}
             currency={group.currency}
           />
+        </section>
+
+        <section className="mt-6">
+          <RecapDownload slug={slug} />
         </section>
       </main>
     </LiveGroupView>
