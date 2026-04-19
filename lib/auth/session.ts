@@ -26,8 +26,9 @@ export interface SessionPayload {
 function secretKey(): Uint8Array {
   const secret = process.env.SESSION_SECRET;
   if (!secret || secret.length < 32) {
+    const envKeys = Object.keys(process.env).filter((k) => k.includes("SESSION")).join(",") || "none";
     throw new Error(
-      "SESSION_SECRET fehlt oder zu kurz (min. 32 Zeichen). Generieren: openssl rand -base64 32",
+      `SESSION_SECRET fehlt oder zu kurz (min. 32). Gefunden: length=${secret?.length ?? "undefined"}, matching_env_keys=[${envKeys}]`,
     );
   }
   return new TextEncoder().encode(secret);

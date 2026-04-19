@@ -41,8 +41,11 @@ export async function createGroup(formData: FormData) {
       groupId = data.id;
       break;
     }
-    if (!error || error.code !== "23505") {
-      throw new Error(`DB-Fehler: ${error?.message ?? "unbekannt"}`);
+    if (error.message?.includes("Invalid API key") || error.code === "PGRST301") {
+      throw new Error("SUPABASE_KEY_INVALID");
+    }
+    if (error.code !== "23505") {
+      throw new Error(`DB-Fehler: ${error.message ?? "unbekannt"}`);
     }
   }
   if (!slug) throw new Error("Konnte keinen eindeutigen Slug generieren.");
