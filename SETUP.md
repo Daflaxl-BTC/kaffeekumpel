@@ -50,6 +50,12 @@ openssl rand -base64 32
 
 In `.env.local` als `SESSION_SECRET=<ergebnis>` eintragen.
 
+**`SUPABASE_JWT_SECRET`** — wird vom Server gebraucht, um kurzlebige Realtime-Tokens zu signieren (`/api/realtime-token`). Seit dem Security-Audit am 2026-04-19 prüft die RLS-Policy auf `public.events`, dass das JWT eine passende `group_ids`-Claim hat; ohne diesen Secret sieht der Browser kein Live-Update mehr. Holen:
+
+1. https://supabase.com/dashboard/project/ahhpzhgnqgggqnawiojk/settings/api öffnen
+2. Abschnitt "JWT Settings" → "JWT Secret" → kopieren
+3. In `.env.local` als `SUPABASE_JWT_SECRET=<wert>` eintragen
+
 **`ANTHROPIC_API_KEY`** (optional, aber empfohlen) — für den Monats-/Jahresrückblick-PDF. Ohne Key greifen harmlose Fallback-Texte, der Button funktioniert trotzdem. Key holen: https://console.anthropic.com/settings/keys
 
 In `.env.local`:
@@ -127,6 +133,7 @@ npx vercel env add NEXT_PUBLIC_SUPABASE_URL production
 npx vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
 npx vercel env add SUPABASE_SERVICE_ROLE_KEY production
 npx vercel env add SESSION_SECRET production
+npx vercel env add SUPABASE_JWT_SECRET production   # für Realtime-Token-Signierung
 npx vercel env add NEXT_PUBLIC_APP_URL production   # = deine kaffeekumpel.vercel.app oder custom Domain
 npx vercel env add ANTHROPIC_API_KEY production     # für den Recap-PDF
 ```
