@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 900" width="400" height="900" role="img" aria-labelledby="title desc">
+  <title id="title">Kaffeemaschine mit QR-Holzschild</title>
+  <desc id="desc">Cartoon-Illustration einer Espressomaschine mit einem Holzschild mit QR-Code obendrauf.</desc>
+
+  <defs>
+    <!-- Warm ambient background glow -->
+    <radialGradient id="bgGlow" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#FAF6F1"/>
+      <stop offset="55%" stop-color="#F1E7D8"/>
+      <stop offset="100%" stop-color="#E8D5B8"/>
+    </radialGradient>
+
+    <!-- Coffee machine body: dark espresso with soft light -->
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B3A1E"/>
+      <stop offset="45%" stop-color="#3A2618"/>
+      <stop offset="100%" stop-color="#2E1D10"/>
+    </linearGradient>
+
+    <!-- Subtle left-edge highlight on body -->
+    <linearGradient id="bodyHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7A4E32" stop-opacity="0.85"/>
+      <stop offset="35%" stop-color="#7A4E32" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#7A4E32" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Chrome/metallic parts -->
+    <linearGradient id="chrome" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8E8E8"/>
+      <stop offset="40%" stop-color="#FFFFFF"/>
+      <stop offset="55%" stop-color="#D0D0D0"/>
+      <stop offset="100%" stop-color="#888888"/>
+    </linearGradient>
+
+    <!-- Warm wood grain (sign + handle) -->
+    <linearGradient id="woodTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8D5B8"/>
+      <stop offset="45%" stop-color="#D2B48C"/>
+      <stop offset="100%" stop-color="#8B5A2B"/>
+    </linearGradient>
+    <linearGradient id="woodEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8B5A2B"/>
+      <stop offset="100%" stop-color="#5B3A1E"/>
+    </linearGradient>
+
+    <!-- Cup ceramic -->
+    <linearGradient id="cupGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E8D5B8"/>
+      <stop offset="45%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C4A076"/>
+    </linearGradient>
+
+    <!-- Coffee liquid -->
+    <radialGradient id="coffeeLiquid" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#8B5A2B"/>
+      <stop offset="60%" stop-color="#5B3A1E"/>
+      <stop offset="100%" stop-color="#2E1D10"/>
+    </radialGradient>
+
+    <!-- Soft drop shadow -->
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+      <feOffset dx="2" dy="6"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+
+  <!-- ===== BACKGROUND ===== -->
+  <rect width="400" height="900" fill="url(#bgGlow)"/>
+
+  <!-- Soft colored blobs for warmth -->
+  <g opacity="0.4" filter="url(#blur6)">
+    <circle cx="70"  cy="180" r="80" fill="#C4A076"/>
+    <circle cx="350" cy="380" r="95" fill="#D2B48C"/>
+    <circle cx="50"  cy="650" r="85" fill="#E8D5B8"/>
+    <circle cx="360" cy="800" r="65" fill="#C4A076"/>
+  </g>
+
+  <!-- Floating beans, small -->
+  <g opacity="0.35" fill="#5B3A1E">
+    <ellipse cx="60"  cy="310" rx="7" ry="11" transform="rotate(-30 60 310)"/>
+    <ellipse cx="350" cy="230" rx="6" ry="9" transform="rotate(40 350 230)"/>
+    <ellipse cx="360" cy="560" rx="7" ry="10" transform="rotate(-20 360 560)"/>
+    <ellipse cx="40"  cy="480" rx="6" ry="9" transform="rotate(15 40 480)"/>
+  </g>
+
+  <!-- ===== STEAM ===== -->
+  <g opacity="0.75" fill="#FFFFFF" filter="url(#blur3)">
+    <path d="M 170 110 Q 180 70 205 78 Q 225 86 220 110 Q 210 135 195 128 Q 175 125 170 110 Z"/>
+    <path d="M 140 180 Q 155 145 180 155 Q 200 165 190 185 Q 180 205 165 198 Q 145 195 140 180 Z"/>
+    <path d="M 220 160 Q 240 130 260 145 Q 275 158 265 175 Q 252 190 240 180 Q 222 175 220 160 Z"/>
+  </g>
+  <g opacity="0.55" fill="#FFFFFF" filter="url(#blur2)">
+    <ellipse cx="200" cy="225" rx="42" ry="16"/>
+    <ellipse cx="215" cy="195" rx="28" ry="12"/>
+    <ellipse cx="182" cy="150" rx="22" ry="9"/>
+  </g>
+
+  <!-- ===== GROUND SHADOW under machine ===== -->
+  <ellipse cx="200" cy="762" rx="175" ry="20" fill="#3A2618" opacity="0.2" filter="url(#blur3)"/>
+
+  <!-- ===== COFFEE MACHINE ===== -->
+  <g filter="url(#soft)">
+    <!-- Water tank rear hump -->
+    <rect x="110" y="270" width="170" height="45" rx="12" fill="url(#bodyGrad)"/>
+    <rect x="120" y="276" width="150" height="8" rx="4" fill="#7A4E32" opacity="0.35"/>
+    <rect x="120" y="290" width="150" height="4" rx="2" fill="#1A0F05" opacity="0.3"/>
+
+    <!-- Main body -->
+    <rect x="70" y="305" width="260" height="380" rx="30" fill="url(#bodyGrad)"/>
+
+    <!-- Left soft highlight -->
+    <rect x="70" y="305" width="70" height="380" rx="30" fill="url(#bodyHighlight)"/>
+
+    <!-- Top cup warmer -->
+    <rect x="80" y="300" width="240" height="18" rx="9" fill="#5B3A1E"/>
+    <rect x="92" y="306" width="216" height="8" rx="4" fill="#2E1D10"/>
+    <rect x="95" y="307" width="210" height="2" fill="#1A0F05"/>
+  </g>
+
+  <!-- Control panel -->
+  <rect x="105" y="355" width="190" height="150" rx="18" fill="#2E1D10"/>
+  <rect x="113" y="363" width="174" height="134" rx="14" fill="#3A2618"/>
+  <rect x="113" y="363" width="174" height="30" rx="14" fill="#1A0F05" opacity="0.4"/>
+
+  <!-- Pressure gauge -->
+  <g>
+    <circle cx="200" cy="410" r="40" fill="url(#chrome)"/>
+    <circle cx="200" cy="410" r="34" fill="#FAF6F1"/>
+    <circle cx="200" cy="410" r="32" fill="none" stroke="#3A2618" stroke-width="1.5"/>
+    <!-- Gauge ticks -->
+    <g stroke="#5B3A1E" stroke-width="1.5" stroke-linecap="round">
+      <line x1="200" y1="382" x2="200" y2="388"/>
+      <line x1="222" y1="392" x2="218" y2="396"/>
+      <line x1="230" y1="410" x2="224" y2="410"/>
+      <line x1="170" y1="410" x2="176" y2="410"/>
+      <line x1="178" y1="392" x2="182" y2="396"/>
+      <line x1="210" y1="388" x2="208" y2="392"/>
+      <line x1="190" y1="388" x2="192" y2="392"/>
+    </g>
+    <!-- Gauge needle -->
+    <line x1="200" y1="410" x2="220" y2="395" stroke="#8B5A2B" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="200" cy="410" r="3.5" fill="#2E1D10"/>
+    <text x="200" y="432" text-anchor="middle" font-family="system-ui, sans-serif" font-size="6.5" fill="#5B3A1E" letter-spacing="0.4">BAR</text>
+  </g>
+
+  <!-- Buttons -->
+  <g>
+    <circle cx="140" cy="465" r="11" fill="#5B3A1E"/>
+    <circle cx="140" cy="465" r="7"  fill="#3D6B3A"/>
+    <circle cx="138" cy="463" r="2"  fill="#9BC79A"/>
+  </g>
+  <g>
+    <circle cx="260" cy="465" r="11" fill="#5B3A1E"/>
+    <rect   x="255" y="461" width="10" height="8" rx="1.5" fill="#D2B48C"/>
+  </g>
+
+  <!-- Logo text -->
+  <text x="200" y="480" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#D2B48C" letter-spacing="1.2">KAFFEEKUMPEL</text>
+
+  <!-- Group head -->
+  <rect x="170" y="505" width="60" height="55" rx="8" fill="url(#chrome)"/>
+  <rect x="178" y="513" width="44" height="40" rx="5" fill="#2E1D10"/>
+  <circle cx="200" cy="533" r="4" fill="#5B3A1E"/>
+
+  <!-- Portafilter handle (wooden) -->
+  <g transform="rotate(16 230 560)">
+    <rect x="218" y="553" width="22" height="16" rx="3" fill="url(#chrome)"/>
+    <rect x="240" y="551" width="64" height="20" rx="10" fill="url(#woodTop)"/>
+    <!-- wood grain lines -->
+    <path d="M 248 557 Q 272 554 298 558" stroke="#8B5A2B" stroke-width="0.8" fill="none" opacity="0.55"/>
+    <path d="M 248 563 Q 272 561 298 564" stroke="#8B5A2B" stroke-width="0.8" fill="none" opacity="0.45"/>
+    <circle cx="300" cy="561" r="5" fill="#5B3A1E"/>
+  </g>
+
+  <!-- Spout -->
+  <rect x="193" y="555" width="14" height="14" rx="2" fill="url(#chrome)"/>
+  <rect x="196" y="567" width="8" height="3" rx="1" fill="#2E1D10"/>
+
+  <!-- Coffee stream -->
+  <path d="M 197 572 Q 198 590 199 615" stroke="#3A2618" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85"/>
+  <path d="M 202 572 Q 201 590 200 615" stroke="#5B3A1E" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.7"/>
+
+  <!-- Drip tray -->
+  <rect x="88" y="648" width="224" height="44" rx="10" fill="#2E1D10"/>
+  <rect x="94" y="653" width="212" height="26" rx="5" fill="#3A2618"/>
+  <!-- Drip tray grate -->
+  <g stroke="#1A0F05" stroke-width="1">
+    <line x1="104" y1="660" x2="296" y2="660"/>
+    <line x1="104" y1="666" x2="296" y2="666"/>
+    <line x1="104" y1="672" x2="296" y2="672"/>
+  </g>
+  <!-- Subtle shine -->
+  <rect x="100" y="651" width="204" height="2" rx="1" fill="#7A4E32" opacity="0.4"/>
+
+  <!-- Steam wand (left side) -->
+  <rect x="58" y="355" width="12" height="100" rx="4" fill="url(#chrome)"/>
+  <rect x="60" y="450" width="8" height="14" rx="2" fill="#2E1D10"/>
+  <circle cx="64" cy="465" r="5" fill="#5B3A1E"/>
+  <!-- Steam wand knob -->
+  <circle cx="64" cy="352" r="8" fill="url(#chrome)"/>
+  <circle cx="64" cy="352" r="5" fill="#5B3A1E"/>
+  <rect x="63" y="345" width="2" height="14" rx="1" fill="#2E1D10"/>
+
+  <!-- Side indicator lights -->
+  <circle cx="308" cy="360" r="4" fill="#5A8A54"/>
+  <circle cx="308" cy="372" r="4" fill="#D2B48C" opacity="0.6"/>
+  <circle cx="308" cy="384" r="4" fill="#5B3A1E"/>
+
+  <!-- ===== COFFEE CUP in drip tray ===== -->
+  <g>
+    <!-- Saucer -->
+    <ellipse cx="200" cy="638" rx="48" ry="7" fill="#5B3A1E" opacity="0.4"/>
+    <ellipse cx="200" cy="636" rx="46" ry="6" fill="url(#cupGrad)"/>
+    <!-- Cup body -->
+    <path d="M 173 600 Q 170 640 185 645 L 215 645 Q 230 640 227 600 Z" fill="url(#cupGrad)"/>
+    <!-- Cup rim shadow -->
+    <ellipse cx="200" cy="602" rx="27" ry="6" fill="#3A2618" opacity="0.25"/>
+    <ellipse cx="200" cy="601" rx="26" ry="5" fill="url(#coffeeLiquid)"/>
+    <!-- Crema foam -->
+    <ellipse cx="200" cy="600" rx="22" ry="3.5" fill="#C4A076" opacity="0.8"/>
+    <ellipse cx="196" cy="599" rx="6" ry="1.5" fill="#E8D5B8" opacity="0.8"/>
+    <!-- Cup handle -->
+    <path d="M 227 610 Q 245 612 245 625 Q 245 636 227 635" stroke="url(#cupGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Steam from cup -->
+  <g opacity="0.55" fill="#FFFFFF" filter="url(#blur2)">
+    <path d="M 190 590 Q 188 575 195 570 Q 200 575 197 585 Z"/>
+    <path d="M 205 590 Q 210 575 202 568 Q 197 575 200 585 Z"/>
+  </g>
+
+  <!-- ===== COUNTER SURFACE ===== -->
+  <rect x="0" y="755" width="400" height="3" fill="#8B5A2B" opacity="0.35"/>
+  <rect x="0" y="758" width="400" height="1" fill="#5B3A1E" opacity="0.4"/>
+
+  <!-- Scattered beans on counter -->
+  <g fill="#3A2618">
+    <g transform="translate(80 800) rotate(-30)">
+      <ellipse cx="0" cy="0" rx="10" ry="15" fill="#5B3A1E"/>
+      <path d="M 0 -13 Q -2 0 0 13" stroke="#1A0F05" stroke-width="1.2" fill="none"/>
+      <ellipse cx="-3" cy="-1" rx="2" ry="4" fill="#8B5A2B" opacity="0.4"/>
+    </g>
+    <g transform="translate(110 820) rotate(25)">
+      <ellipse cx="0" cy="0" rx="9" ry="13" fill="#5B3A1E"/>
+      <path d="M 0 -11 Q -2 0 0 11" stroke="#1A0F05" stroke-width="1.1" fill="none"/>
+    </g>
+    <g transform="translate(320 795) rotate(50)">
+      <ellipse cx="0" cy="0" rx="10" ry="14" fill="#5B3A1E"/>
+      <path d="M 0 -12 Q -2 0 0 12" stroke="#1A0F05" stroke-width="1.2" fill="none"/>
+      <ellipse cx="-3" cy="-1" rx="2" ry="4" fill="#8B5A2B" opacity="0.4"/>
+    </g>
+    <g transform="translate(295 825) rotate(-15)">
+      <ellipse cx="0" cy="0" rx="9" ry="13" fill="#5B3A1E"/>
+      <path d="M 0 -11 Q -2 0 0 11" stroke="#1A0F05" stroke-width="1.1" fill="none"/>
+    </g>
+    <g transform="translate(340 830) rotate(70)">
+      <ellipse cx="0" cy="0" rx="8" ry="12" fill="#5B3A1E"/>
+      <path d="M 0 -10 Q -2 0 0 10" stroke="#1A0F05" stroke-width="1" fill="none"/>
+    </g>
+  </g>
+
+  <!-- ===== WOODEN QR SIGN ON TOP ===== -->
+  <g transform="translate(205 240) rotate(-6)" filter="url(#soft)">
+    <!-- Shadow beneath sign on machine top -->
+    <ellipse cx="0" cy="64" rx="90" ry="6" fill="#1A0F05" opacity="0.35" filter="url(#blur3)"/>
+    <!-- Back/edge of plank -->
+    <rect x="-90" y="-68" width="180" height="134" rx="12" fill="url(#woodEdge)" transform="translate(3 4)"/>
+    <!-- Front face -->
+    <rect x="-90" y="-68" width="180" height="134" rx="12" fill="url(#woodTop)"/>
+    <!-- Wood grain lines -->
+    <g stroke="#8B5A2B" stroke-width="0.9" opacity="0.45" fill="none">
+      <path d="M -85 -55 Q 0 -60 85 -53"/>
+      <path d="M -85 -35 Q 0 -33 85 -38"/>
+      <path d="M -85 -10 Q 0 -13 85 -6"/>
+      <path d="M -85 15 Q 0 10 85 18"/>
+      <path d="M -85 40 Q 0 45 85 38"/>
+      <path d="M -85 58 Q 0 60 85 55"/>
+    </g>
+    <!-- Knots -->
+    <ellipse cx="-65" cy="30" rx="3" ry="2" fill="#5B3A1E" opacity="0.55"/>
+    <ellipse cx="70" cy="-25" rx="2.5" ry="1.8" fill="#5B3A1E" opacity="0.5"/>
+    <!-- Engraved inner border -->
+    <rect x="-83" y="-61" width="166" height="120" rx="8" fill="none" stroke="#5B3A1E" stroke-width="1.1" opacity="0.55"/>
+
+    <!-- QR panel engraved/lighter -->
+    <rect x="-44" y="-54" width="88" height="88" rx="4" fill="#F1E7D8"/>
+    <rect x="-42" y="-52" width="84" height="84" rx="3" fill="#FAF6F1"/>
+
+    <!-- QR modules (8px cell, 11x11 grid starts at -42,-52) -->
+    <g fill="#2E1D10">
+      <!-- Position marker top-left (7x7 cell block = 24x24 using 3-cell outer) -->
+      <!-- Using 8px cells: outer 3x3 = 24x24 -->
+      <rect x="-42" y="-52" width="24" height="24"/>
+      <rect x="-38" y="-48" width="16" height="16" fill="#FAF6F1"/>
+      <rect x="-34" y="-44" width="8"  height="8"/>
+
+      <!-- Position marker top-right -->
+      <rect x="18"  y="-52" width="24" height="24"/>
+      <rect x="22"  y="-48" width="16" height="16" fill="#FAF6F1"/>
+      <rect x="26"  y="-44" width="8"  height="8"/>
+
+      <!-- Position marker bottom-left -->
+      <rect x="-42" y="8"   width="24" height="24"/>
+      <rect x="-38" y="12"  width="16" height="16" fill="#FAF6F1"/>
+      <rect x="-34" y="16"  width="8"  height="8"/>
+
+      <!-- Timing patterns -->
+      <rect x="-18" y="-28" width="4" height="4"/>
+      <rect x="-10" y="-28" width="4" height="4"/>
+      <rect x="-2"  y="-28" width="4" height="4"/>
+      <rect x="6"   y="-28" width="4" height="4"/>
+      <rect x="14"  y="-28" width="4" height="4"/>
+      <rect x="-18" y="8"   width="4" height="4"/>
+
+      <!-- Data modules (plausible random pattern) -->
+      <rect x="-14" y="-24" width="4" height="4"/>
+      <rect x="-6"  y="-24" width="4" height="4"/>
+      <rect x="2"   y="-24" width="4" height="4"/>
+      <rect x="10"  y="-24" width="4" height="4"/>
+      <rect x="-18" y="-20" width="4" height="4"/>
+      <rect x="-10" y="-20" width="4" height="4"/>
+      <rect x="6"   y="-20" width="4" height="4"/>
+      <rect x="14"  y="-20" width="4" height="4"/>
+      <rect x="-14" y="-16" width="4" height="4"/>
+      <rect x="-6"  y="-16" width="4" height="4"/>
+      <rect x="2"   y="-16" width="4" height="4"/>
+      <rect x="10"  y="-16" width="4" height="4"/>
+      <rect x="-18" y="-12" width="4" height="4"/>
+      <rect x="-10" y="-12" width="4" height="4"/>
+      <rect x="-2"  y="-12" width="4" height="4"/>
+      <rect x="6"   y="-12" width="4" height="4"/>
+      <rect x="14"  y="-12" width="4" height="4"/>
+      <rect x="-14" y="-8"  width="4" height="4"/>
+      <rect x="2"   y="-8"  width="4" height="4"/>
+      <rect x="10"  y="-8"  width="4" height="4"/>
+      <rect x="-18" y="-4"  width="4" height="4"/>
+      <rect x="-6"  y="-4"  width="4" height="4"/>
+      <rect x="6"   y="-4"  width="4" height="4"/>
+      <rect x="14"  y="-4"  width="4" height="4"/>
+      <rect x="-14" y="0"   width="4" height="4"/>
+      <rect x="-10" y="0"   width="4" height="4"/>
+      <rect x="2"   y="0"   width="4" height="4"/>
+      <rect x="10"  y="0"   width="4" height="4"/>
+      <rect x="-18" y="4"   width="4" height="4"/>
+      <rect x="-6"  y="4"   width="4" height="4"/>
+      <rect x="6"   y="4"   width="4" height="4"/>
+
+      <!-- Below timing row -->
+      <rect x="-14" y="12"  width="4" height="4"/>
+      <rect x="-6"  y="12"  width="4" height="4"/>
+      <rect x="2"   y="12"  width="4" height="4"/>
+      <rect x="10"  y="12"  width="4" height="4"/>
+      <rect x="-14" y="16"  width="4" height="4"/>
+      <rect x="-2"  y="16"  width="4" height="4"/>
+      <rect x="6"   y="16"  width="4" height="4"/>
+      <rect x="14"  y="16"  width="4" height="4"/>
+      <rect x="-10" y="20"  width="4" height="4"/>
+      <rect x="2"   y="20"  width="4" height="4"/>
+      <rect x="10"  y="20"  width="4" height="4"/>
+      <rect x="-14" y="24"  width="4" height="4"/>
+      <rect x="-6"  y="24"  width="4" height="4"/>
+      <rect x="6"   y="24"  width="4" height="4"/>
+      <rect x="14"  y="24"  width="4" height="4"/>
+      <rect x="-10" y="28"  width="4" height="4"/>
+      <rect x="2"   y="28"  width="4" height="4"/>
+      <rect x="10"  y="28"  width="4" height="4"/>
+    </g>
+
+    <!-- Engraved title + slug -->
+    <text y="52" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="800" fill="#3A2618" letter-spacing="1.5">H3K7QP</text>
+
+    <!-- Little burn/highlight edge hint -->
+    <path d="M -88 -60 Q -60 -66 -10 -65" stroke="#FAF6F1" stroke-width="1.2" fill="none" opacity="0.55"/>
+  </g>
+
+  <!-- ===== LITTLE SCAN CUE ===== -->
+  <g transform="translate(310 210)">
+    <path d="M 0 0 Q -25 -8 -45 8" stroke="#5B3A1E" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
+    <path d="M -48 6 L -42 14 L -36 4" stroke="#5B3A1E" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="5" y="4" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#5B3A1E">scan mich</text>
+  </g>
+</svg>

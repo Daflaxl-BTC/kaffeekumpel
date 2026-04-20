@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Coffee, QrCode, HandCoins, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,26 @@ export default function LandingPage() {
       {/* Pflanzen-Dekor */}
       <PlantLeft className="pointer-events-none absolute bottom-0 left-0 z-0 h-[90vh] max-h-[780px] w-[150px] -translate-x-[70px] opacity-55 sm:w-[220px] sm:-translate-x-[60px] sm:opacity-75 lg:w-[340px] lg:-translate-x-[40px] lg:opacity-90" />
       <PlantRight className="pointer-events-none absolute bottom-0 right-0 z-0 h-[90vh] max-h-[780px] w-[150px] translate-x-[70px] opacity-55 sm:w-[220px] sm:translate-x-[60px] sm:opacity-75 lg:w-[340px] lg:translate-x-[40px] lg:opacity-90" />
+
+      {/* Kaffeemaschinen-Illustration – nur Desktop, rahmt den Hero ein */}
+      <Image
+        src="/illustrations/coffee-machine-portrait.svg"
+        alt=""
+        width={400}
+        height={900}
+        priority
+        aria-hidden
+        className="pointer-events-none absolute top-4 left-4 z-0 hidden w-[260px] opacity-90 drop-shadow-xl xl:block 2xl:left-12 2xl:w-[340px]"
+      />
+      <Image
+        src="/illustrations/coffee-machine-portrait.svg"
+        alt=""
+        width={400}
+        height={900}
+        priority
+        aria-hidden
+        className="pointer-events-none absolute top-4 right-4 z-0 hidden w-[260px] opacity-90 drop-shadow-xl xl:block 2xl:right-12 2xl:w-[340px]"
+      />
 
       <section className="relative z-10 max-w-2xl mx-auto px-6 pt-20 pb-12 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-kaffee-800 text-white mb-6 text-3xl shadow-lg shadow-kaffee-800/25">
@@ -40,6 +61,34 @@ export default function LandingPage() {
             <ScanLine className="w-5 h-5" /> QR-Code scannen oder Code eingeben
           </Button>
         </Link>
+      </section>
+
+      {/* So sieht's an der Maschine aus – Story-Section mit Quadrat-Illustration */}
+      <section className="relative z-10 mx-auto max-w-5xl px-6 py-16">
+        <div className="grid items-center gap-10 md:grid-cols-2">
+          <Image
+            src="/illustrations/coffee-machine-square.svg"
+            alt="Kaffeemaschine mit Holzschild und QR-Code obendrauf"
+            width={600}
+            height={600}
+            className="mx-auto w-full max-w-md drop-shadow-2xl"
+          />
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-kaffee-900 mb-4">
+              Ein Holzschild. Ein Scan. Fertig.
+            </h2>
+            <p className="text-kaffee-800 text-lg mb-3">
+              Der QR-Code landet da, wo er hingehört: direkt an der
+              Kaffeemaschine. Aufkleber reicht – oder du bestellst später ein
+              graviertes Holzschild, das einfach obendrauf liegt.
+            </p>
+            <p className="text-kaffee-700">
+              Jeder, der durch die Küche geht, scannt einmal, wählt seinen
+              Namen, und der Strich ist drin. Keine App, kein Account,
+              keine ausgedruckte Strichliste.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="relative z-10 max-w-4xl mx-auto px-6 py-12">
