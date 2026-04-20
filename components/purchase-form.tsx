@@ -50,12 +50,12 @@ export function PurchaseForm({ slug, products, currency }: Props) {
       onSubmit={submit}
       className="grid gap-3 bg-white/80 rounded-2xl p-4 border border-kaffee-100"
     >
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         <select
           value={productName}
           onChange={(e) => setProductName(e.target.value)}
           disabled={customProduct.length > 0}
-          className="rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm disabled:opacity-50"
+          className="w-full min-w-0 rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm disabled:opacity-50"
         >
           {products.length === 0 && <option value="">— noch keins —</option>}
           {products.map((p) => (
@@ -70,17 +70,17 @@ export function PurchaseForm({ slug, products, currency }: Props) {
           onChange={(e) => setCustomProduct(e.target.value)}
           placeholder="oder neu: z.B. Bohnen"
           maxLength={60}
-          className="rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
+          className="w-full min-w-0 rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
         />
       </div>
-      <div className="flex gap-2">
+      <div className="grid gap-2 sm:grid-cols-[1fr_2fr]">
         <input
           type="text"
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="12,99"
-          className="flex-1 rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
+          className="w-full min-w-0 rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
         />
         <input
           type="text"
@@ -88,12 +88,12 @@ export function PurchaseForm({ slug, products, currency }: Props) {
           onChange={(e) => setNote(e.target.value)}
           placeholder="Notiz (optional)"
           maxLength={200}
-          className="flex-[2] rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
+          className="w-full min-w-0 rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
         />
-        <Button type="submit" size="sm" disabled={pending}>
-          {pending ? "…" : "+ Eintragen"}
-        </Button>
       </div>
+      <Button type="submit" disabled={pending} className="w-full">
+        {pending ? "…" : "+ Eintragen"}
+      </Button>
     </form>
   );
 }
