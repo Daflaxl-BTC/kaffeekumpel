@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Coffee, QrCode, HandCoins } from "lucide-react";
+import { Coffee, QrCode, HandCoins, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlantLeft, PlantRight } from "@/components/plants";
 
@@ -29,6 +29,17 @@ export default function LandingPage() {
           Dauert 60 Sekunden. Kein Login. Du musst nur einmal deinen Namen
           eintippen.
         </p>
+
+        <div className="mt-8 flex items-center justify-center gap-3 text-sm text-kaffee-700/80">
+          <div className="h-px w-8 bg-kaffee-700/30" />
+          Schon eine Gruppe?
+          <div className="h-px w-8 bg-kaffee-700/30" />
+        </div>
+        <Link href="/login" className="mt-3 inline-block">
+          <Button variant="secondary" size="lg">
+            <ScanLine className="w-5 h-5" /> QR-Code scannen oder Code eingeben
+          </Button>
+        </Link>
       </section>
 
       <section className="relative z-10 max-w-4xl mx-auto px-6 py-12">
