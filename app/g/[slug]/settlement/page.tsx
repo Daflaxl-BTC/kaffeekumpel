@@ -67,7 +67,7 @@ export default async function SettlementPage({
     memberList.find((m) => m.id === session.member_id)?.role === "admin";
 
   return (
-    <main className="min-h-screen max-w-2xl mx-auto px-4 pt-6 pb-24">
+    <main className="min-h-screen max-w-2xl mx-auto px-3 pt-4 pb-24 sm:px-4 sm:pt-6">
       <div className="mb-4">
         <Link
           href={`/g/${slug}`}
@@ -75,7 +75,7 @@ export default async function SettlementPage({
         >
           ← zurück zur Gruppe
         </Link>
-        <h1 className="text-2xl font-bold text-kaffee-900 mt-2">Abrechnung</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-kaffee-900 mt-2">Abrechnung</h1>
         <p className="text-sm text-kaffee-700">
           Stand seit{" "}
           {coveredFrom.toLocaleDateString("de-DE", {
@@ -142,10 +142,10 @@ export default async function SettlementPage({
               return (
                 <div
                   key={i}
-                  className="flex items-center justify-between bg-white/80 rounded-xl p-3 border border-kaffee-100"
+                  className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3 bg-white/80 rounded-xl p-3 border border-kaffee-100"
                 >
-                  <div className="text-sm">
-                    <div className="font-medium text-kaffee-900">
+                  <div className="text-sm min-w-0">
+                    <div className="font-medium text-kaffee-900 break-words">
                       {from.name} → {to.name}
                     </div>
                     <div className="text-kaffee-700">
@@ -161,11 +161,14 @@ export default async function SettlementPage({
                       })}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="shrink-0"
                     >
-                      <Button size="sm">Per PayPal zahlen</Button>
+                      <Button size="sm" className="w-full sm:w-auto">
+                        Per PayPal zahlen
+                      </Button>
                     </a>
                   ) : amILocus && !to.paypal_handle ? (
-                    <span className="text-xs text-kaffee-700/70 text-right max-w-[140px]">
+                    <span className="text-xs text-kaffee-700/70 sm:text-right sm:max-w-[160px]">
                       {to.name} hat noch keinen PayPal-Handle hinterlegt
                     </span>
                   ) : null}

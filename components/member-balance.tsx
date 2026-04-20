@@ -12,7 +12,7 @@ interface Props {
 export function MemberBalance({ members, balances, currency }: Props) {
   const byId = new Map(balances.map((b) => [b.member_id, b.balance_cents]));
   return (
-    <ul className="grid sm:grid-cols-2 gap-2">
+    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {members.map((m) => {
         const bal = byId.get(m.id) ?? 0;
         const positive = bal > 0;
@@ -20,11 +20,11 @@ export function MemberBalance({ members, balances, currency }: Props) {
         return (
           <li
             key={m.id}
-            className="flex items-center justify-between bg-white/80 rounded-xl px-3 py-2 border border-kaffee-100"
+            className="flex items-center justify-between gap-2 bg-white/80 rounded-xl px-3 py-2 border border-kaffee-100"
           >
-            <span className="text-sm text-kaffee-900 font-medium">{m.name}</span>
+            <span className="text-sm text-kaffee-900 font-medium truncate min-w-0">{m.name}</span>
             <span
-              className={`text-sm tabular-nums ${
+              className={`text-sm tabular-nums shrink-0 ${
                 zero
                   ? "text-kaffee-700"
                   : positive

@@ -81,7 +81,7 @@ export default async function GroupPage({
       initialEvents={eventList}
       groupId={group.id}
     >
-      <main className="min-h-screen max-w-2xl mx-auto px-4 pt-6 pb-24">
+      <main className="min-h-screen max-w-2xl mx-auto px-3 pt-4 pb-24 sm:px-4 sm:pt-6">
         {sp.welcome === "1" && (
           <Card className="mb-4 bg-kaffee-100 border-kaffee-300">
             <p className="text-sm text-kaffee-900">
@@ -98,19 +98,19 @@ export default async function GroupPage({
           </Card>
         )}
 
-        <header className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-kaffee-900">
+        <header className="mb-4 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-kaffee-900 break-words">
               {group.name}
             </h1>
-            <p className="text-sm text-kaffee-700">
+            <p className="text-sm text-kaffee-700 break-words">
               Hi {session.name} ☕ · Code{" "}
               <span className="font-mono">{slug}</span>
             </p>
           </div>
           <Link
             href={`/g/${slug}/profile`}
-            className="text-sm underline text-kaffee-700"
+            className="shrink-0 text-sm underline text-kaffee-700"
           >
             Profil
           </Link>

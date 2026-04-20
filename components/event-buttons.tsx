@@ -32,7 +32,7 @@ export function EventButtons({ slug, coffeePriceCents, currency }: Props) {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-2 sm:gap-3">
       <TapButton
         onClick={() => tap("coffee")}
         disabled={pending}
@@ -64,7 +64,7 @@ export function EventButtons({ slug, coffeePriceCents, currency }: Props) {
         href={`/api/qr/${slug}?format=png`}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-kaffee-100 text-kaffee-900 px-4 py-6 hover:bg-kaffee-300/60 transition-all"
+        className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-kaffee-100 text-kaffee-900 px-3 py-5 sm:px-4 sm:py-6 hover:bg-kaffee-300/60 transition-all"
       >
         <span className="text-xs font-medium text-kaffee-700">QR-Code</span>
         <span className="text-base font-semibold">zum Schild</span>
@@ -94,7 +94,7 @@ function TapButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-4 py-6 transition-all active:scale-[0.97] disabled:opacity-60 ${tint} ${
+      className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-3 py-5 sm:px-4 sm:py-6 transition-all active:scale-[0.97] disabled:opacity-60 ${tint} ${
         highlight ? "ring-4 ring-white/40" : ""
       }`}
     >

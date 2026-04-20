@@ -3,21 +3,21 @@ import { Button } from "@/components/ui/button";
 
 export default function NewGroupPage() {
   return (
-    <main className="min-h-screen px-6 py-12 max-w-md mx-auto">
+    <main className="min-h-screen px-4 py-8 sm:px-6 sm:py-12 max-w-md mx-auto">
       <a
         href="/"
         className="text-sm text-kaffee-700 hover:underline inline-block mb-4"
       >
         ← zurück
       </a>
-      <h1 className="text-3xl font-bold text-kaffee-900 mb-2">
+      <h1 className="text-2xl sm:text-3xl font-bold text-kaffee-900 mb-2">
         Neue Gruppe anlegen
       </h1>
       <p className="text-kaffee-700 mb-8">
         In 60 Sekunden fertig. Du kannst später alles ändern.
       </p>
 
-      <form action={createGroup} className="space-y-5 bg-white/80 rounded-2xl p-6 border border-kaffee-100">
+      <form action={createGroup} className="space-y-5 bg-white/80 rounded-2xl p-4 sm:p-6 border border-kaffee-100">
         <div>
           <label
             htmlFor="groupName"
