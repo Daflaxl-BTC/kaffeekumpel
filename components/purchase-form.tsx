@@ -40,7 +40,9 @@ export function PurchaseForm({ slug, products, currency }: Props) {
         setAmount("");
         setNote("");
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Fehler");
+        const digest = (err as { digest?: string })?.digest;
+        const msg = err instanceof Error ? err.message : "Fehler";
+        toast.error(digest ? `${msg} (Ref: ${digest})` : msg);
       }
     });
   };

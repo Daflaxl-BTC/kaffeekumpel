@@ -26,7 +26,11 @@ export function EventButtons({ slug, coffeePriceCents, currency }: Props) {
         if (type === "cleaning") toast.success("🧹 geputzt — du bist ein Schatz");
         if (type === "refill") toast.success("🥛 aufgefüllt");
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Fehler");
+        // In Prod ersetzt Next.js die echte Message durch einen generischen
+        // Text – der `digest` zeigt auf den Vercel-Log-Eintrag.
+        const digest = (e as { digest?: string })?.digest;
+        const msg = e instanceof Error ? e.message : "Fehler";
+        toast.error(digest ? `${msg} (Ref: ${digest})` : msg);
       }
     });
   };

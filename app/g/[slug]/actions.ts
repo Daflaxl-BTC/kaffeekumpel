@@ -21,7 +21,18 @@ export async function tapEvent(input: { slug: string; type: "coffee" | "cleaning
     member_id: session.member_id,
     type,
   });
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Detail-Message landet in Prod nicht beim Client – daher ins Vercel-Log.
+    console.error("[tapEvent] insert failed", {
+      slug,
+      type,
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    throw new Error(error.message);
+  }
 
   revalidatePath(`/g/${slug}`);
 }
