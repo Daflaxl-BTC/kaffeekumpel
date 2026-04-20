@@ -17,10 +17,14 @@ async function fetchRealtimeToken(): Promise<string | null> {
       credentials: "include",
       cache: "no-store",
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn("[realtime] token fetch failed", res.status, await res.text().catch(() => ""));
+      return null;
+    }
     const data = (await res.json()) as { token?: string };
     return data.token ?? null;
-  } catch {
+  } catch (err) {
+    console.warn("[realtime] token fetch threw", err);
     return null;
   }
 }
@@ -70,7 +74,10 @@ export function useRealtimeEvents({ groupId, onInsert }: Options) {
             onInsertRef.current(payload.new);
           },
         )
-        .subscribe((status) => {
+        .subscribe((status, err) => {
+          if (status !== "SUBSCRIBED") {
+            console.warn("[realtime] subscribe status", status, err);
+          }
           setConnected(status === "SUBSCRIBED");
         });
 
