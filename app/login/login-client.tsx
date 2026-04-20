@@ -7,17 +7,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 
-type DetectedBarcode = { rawValue: string };
-type BarcodeDetectorCtor = new (opts: { formats: string[] }) => {
-  detect: (source: CanvasImageSource) => Promise<DetectedBarcode[]>;
-};
-
-function getBarcodeDetector(): BarcodeDetectorCtor | null {
-  if (typeof window === "undefined") return null;
-  const g = window as unknown as { BarcodeDetector?: BarcodeDetectorCtor };
-  return g.BarcodeDetector ?? null;
-}
-
 function slugFromScan(raw: string): string | null {
   const trimmed = raw.trim();
   try {
@@ -43,6 +32,7 @@ export function LoginClient() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const stopScanner = () => {
     if (rafRef.current !== null) {
@@ -61,23 +51,21 @@ export function LoginClient() {
 
   const startScanner = async () => {
     setError(null);
-    const Detector = getBarcodeDetector();
-    if (!Detector) {
-      setError(
-        "Dein Browser hat keinen QR-Scanner. Öffne den Code mit der Kamera-App deines Handys, oder tipp den 6-stelligen Code unten manuell ein.",
-      );
-      return;
-    }
     if (!navigator.mediaDevices?.getUserMedia) {
-      setError("Kein Kamera-Zugriff möglich auf diesem Gerät.");
+      setError(
+        "Kein Kamera-Zugriff möglich auf diesem Gerät. Tipp den 6-stelligen Code unten manuell ein.",
+      );
       return;
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" } },
-        audio: false,
-      });
+      const [{ default: jsQR }, stream] = await Promise.all([
+        import("jsqr"),
+        navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false,
+        }),
+      ]);
       streamRef.current = stream;
       setScanning(true);
 
@@ -92,15 +80,32 @@ export function LoginClient() {
       video.setAttribute("playsinline", "true");
       await video.play();
 
-      const detector = new Detector({ formats: ["qr_code"] });
-      let done = false;
+      const canvas = canvasRef.current ?? document.createElement("canvas");
+      canvasRef.current = canvas;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) {
+        stopScanner();
+        setError("Canvas konnte nicht initialisiert werden.");
+        return;
+      }
 
-      const tick = async () => {
+      let done = false;
+      const tick = () => {
         if (done || !videoRef.current) return;
-        try {
-          const results = await detector.detect(videoRef.current);
-          if (results.length > 0) {
-            const slug = slugFromScan(results[0].rawValue);
+        const v = videoRef.current;
+        if (v.readyState === v.HAVE_ENOUGH_DATA && v.videoWidth > 0) {
+          // Für Performance: runterskalieren auf max 480px Kante.
+          const max = 480;
+          const scale = Math.min(1, max / Math.max(v.videoWidth, v.videoHeight));
+          const w = Math.round(v.videoWidth * scale);
+          const h = Math.round(v.videoHeight * scale);
+          if (canvas.width !== w) canvas.width = w;
+          if (canvas.height !== h) canvas.height = h;
+          ctx.drawImage(v, 0, 0, w, h);
+          const img = ctx.getImageData(0, 0, w, h);
+          const result = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" });
+          if (result) {
+            const slug = slugFromScan(result.data);
             if (slug) {
               done = true;
               stopScanner();
@@ -109,8 +114,6 @@ export function LoginClient() {
               return;
             }
           }
-        } catch {
-          // Einzelner Frame schlug fehl — einfach nächsten versuchen.
         }
         rafRef.current = requestAnimationFrame(tick);
       };
@@ -120,7 +123,7 @@ export function LoginClient() {
       const msg =
         e instanceof Error && e.name === "NotAllowedError"
           ? "Kamera-Zugriff wurde blockiert. Erlaub ihn in den Browser-Einstellungen und versuch's nochmal."
-          : "Kamera konnte nicht gestartet werden.";
+          : "Kamera konnte nicht gestartet werden. Tipp den 6-stelligen Code unten manuell ein.";
       setError(msg);
     }
   };
