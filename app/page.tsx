@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Coffee, QrCode, HandCoins, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlantLeft, PlantRight } from "@/components/plants";
+import { SiteFooter } from "@/components/site-footer";
 
 export default function LandingPage() {
   return (
@@ -62,12 +63,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="relative z-10 px-6 py-12 text-center text-sm text-kaffee-700/80">
-        Open Source, DSGVO-konform, EU-Hosting. Fragen?{" "}
-        <a className="underline" href="mailto:felix.bredl@gmail.com">
-          felix.bredl@gmail.com
-        </a>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

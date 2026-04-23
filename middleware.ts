@@ -11,6 +11,7 @@ import { jwtVerify } from "jose";
 
 const COOKIE_NAME = "kk_session";
 const JOIN_PATH_RE = /^\/g\/[^/]+\/join\/?$/;
+const MAGIC_PATH_RE = /^\/g\/[^/]+\/magic\/?$/;
 const QR_PATH_RE = /^\/api\/qr\//;
 const GROUP_PATH_RE = /^\/g\/([^/]+)(\/.*)?$/;
 
@@ -31,7 +32,11 @@ async function verify(token: string, expectedSlug: string): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (JOIN_PATH_RE.test(pathname) || QR_PATH_RE.test(pathname)) {
+  if (
+    JOIN_PATH_RE.test(pathname) ||
+    MAGIC_PATH_RE.test(pathname) ||
+    QR_PATH_RE.test(pathname)
+  ) {
     return NextResponse.next();
   }
 

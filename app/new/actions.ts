@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabaseService } from "@/lib/supabase/server";
 import { generateSlug } from "@/lib/slug";
 import { setSessionCookie } from "@/lib/auth/session";
+import { checkRateLimit, clientIpFromHeaders } from "@/lib/rate-limit";
 
 const Schema = z.object({
   groupName: z.string().min(1).max(80),
@@ -13,6 +14,18 @@ const Schema = z.object({
 });
 
 export async function createGroup(formData: FormData) {
+  const ip = await clientIpFromHeaders();
+  const rl = checkRateLimit({
+    key: `create-group:${ip}`,
+    max: 5,
+    windowMs: 60 * 60 * 1000, // 1h
+  });
+  if (rl.limited) {
+    throw new Error(
+      "Zu viele Gruppen-Anlagen von dieser IP. Probier's in einer Stunde erneut.",
+    );
+  }
+
   const input = Schema.parse({
     groupName: formData.get("groupName"),
     myName: formData.get("myName"),

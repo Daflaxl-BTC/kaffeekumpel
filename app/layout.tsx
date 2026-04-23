@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
+import { CookieBanner } from "@/components/cookie-banner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="de">
       <body className="min-h-screen antialiased">
         {children}
+        <CookieBanner />
         <Toaster position="top-center" richColors closeButton />
       </body>
     </html>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { supabaseService } from "@/lib/supabase/server";
@@ -12,6 +13,45 @@ import { PurchaseForm } from "@/components/purchase-form";
 import { LiveGroupView } from "@/components/live-group-view";
 import { RecapDownload } from "@/components/recap-download";
 import { Card } from "@/components/ui/card";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const sb = supabaseService();
+  const { data: group } = await sb
+    .from("groups")
+    .select("name")
+    .eq("slug", slug)
+    .single();
+
+  const name = group?.name ?? "Kaffeekasse";
+  const title = `${name} — Kaffeekumpel`;
+  const description = `Digitale Kaffeekasse für ${name}. Ein Tap pro Kaffee, PayPal-Abrechnung in einem Klick.`;
+  const ogImage = `/api/qr/${slug}?format=png`;
+
+  return {
+    title,
+    description,
+    // Gruppen sollen nicht gecrawlt werden — der Slug ist "Zugangscode".
+    robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: "de_DE",
+      images: [{ url: ogImage, width: 1024, height: 1024, alt: `QR-Code für ${name}` }],
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 export default async function GroupPage({
   params,
@@ -58,6 +98,8 @@ export default async function GroupPage({
   const memberList = members ?? [];
   const eventList = events ?? [];
   const productList = products ?? [];
+  const isAdmin =
+    memberList.find((m) => m.id === session.member_id)?.role === "admin";
 
   const cleaning = computeCleaningStatus(
     memberList,
@@ -108,12 +150,22 @@ export default async function GroupPage({
               <span className="font-mono">{slug}</span>
             </p>
           </div>
-          <Link
-            href={`/g/${slug}/profile`}
-            className="text-sm underline text-kaffee-700"
-          >
-            Profil
-          </Link>
+          <div className="flex items-center gap-3 text-sm text-kaffee-700">
+            {isAdmin && (
+              <Link
+                href={`/g/${slug}/admin`}
+                className="underline"
+              >
+                Verwaltung
+              </Link>
+            )}
+            <Link
+              href={`/g/${slug}/profile`}
+              className="underline"
+            >
+              Profil
+            </Link>
+          </div>
         </header>
 
         <CleaningBanner
