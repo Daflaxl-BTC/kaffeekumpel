@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SignJWT } from "jose";
 import { readSessionCookie } from "@/lib/auth/session";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * Gibt ein kurzlebiges JWT (HS256, 1h) zurück, mit dem der Browser-Realtime-
@@ -18,27 +19,11 @@ import { readSessionCookie } from "@/lib/auth/session";
 export const runtime = "nodejs";
 
 const TOKEN_TTL_SECONDS = 60 * 60; // 1h
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 6;
-
-type Bucket = { count: number; windowStart: number };
-const buckets = new Map<string, Bucket>();
 
 function clientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for");
   if (fwd) return fwd.split(",")[0]!.trim();
   return req.headers.get("x-real-ip") ?? "unknown";
-}
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const bucket = buckets.get(ip);
-  if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
-    buckets.set(ip, { count: 1, windowStart: now });
-    return false;
-  }
-  bucket.count += 1;
-  return bucket.count > RATE_LIMIT_MAX;
 }
 
 function jwtSecret(): Uint8Array {
@@ -53,7 +38,12 @@ function jwtSecret(): Uint8Array {
 
 export async function GET(req: NextRequest) {
   const ip = clientIp(req);
-  if (rateLimited(ip)) {
+  const rl = checkRateLimit({
+    key: `realtime-token:${ip}`,
+    max: 6,
+    windowMs: 60_000,
+  });
+  if (rl.limited) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 

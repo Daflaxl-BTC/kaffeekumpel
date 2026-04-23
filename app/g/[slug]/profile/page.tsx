@@ -6,6 +6,8 @@ import { supabaseService } from "@/lib/supabase/server";
 import { readSessionCookie, setSessionCookie } from "@/lib/auth/session";
 import { normalizePaypalHandle, isValidPaypalHandle } from "@/lib/settlement/paypal";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { MagicLinkForm } from "./magic-form";
 
 export default async function ProfilePage({
   params,
@@ -124,6 +126,19 @@ export default async function ProfilePage({
           Speichern
         </Button>
       </form>
+
+      <section className="mt-8">
+        <h2 className="text-sm font-semibold text-kaffee-700 mb-2">
+          Auf anderes Gerät übertragen
+        </h2>
+        <Card>
+          <p className="text-sm text-kaffee-700 mb-3">
+            Du willst dich auf Handy, Tablet oder neuem Laptop einloggen?
+            Schick dir selbst einen Login-Link per E-Mail.
+          </p>
+          <MagicLinkForm slug={slug} defaultEmail={me.email ?? ""} />
+        </Card>
+      </section>
     </main>
   );
 }
