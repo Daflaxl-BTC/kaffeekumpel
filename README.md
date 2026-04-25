@@ -39,9 +39,7 @@ npm run dev
 
 ## Supabase-Projekt
 
-Bereits angelegt: `kaffeekumpel` in Org `ryrcehrjyopwwgrcbncg`
-Region: `eu-central-1` (Frankfurt)
-URL: https://ahhpzhgnqgggqnawiojk.supabase.co
+Region: `eu-central-1` (Frankfurt). URL und Projekt-Referenz in der lokalen `.env.local` (siehe `.env.example`).
 
 Schema und RLS sind bereits eingespielt.
 

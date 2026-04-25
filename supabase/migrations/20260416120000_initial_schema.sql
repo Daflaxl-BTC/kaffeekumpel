@@ -1,5 +1,4 @@
 -- Kaffeekumpel — initial schema
--- (Bereits auf Supabase-Projekt ahhpzhgnqgggqnawiojk eingespielt via MCP.)
 -- Diese Datei ist die Kopie zum Versionieren / Neu-Deployen.
 
 create extension if not exists "pgcrypto";

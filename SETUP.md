@@ -4,7 +4,7 @@ Diese Anleitung führt dich vom geclonten Repo zum laufenden Dev-Server und dann
 
 ## Was schon erledigt ist
 
-- ✅ Supabase-Projekt `kaffeekumpel` angelegt (`ahhpzhgnqgggqnawiojk`, EU-Frankfurt)
+- ✅ Supabase-Projekt `kaffeekumpel` angelegt (Region EU-Frankfurt). Die konkrete Projekt-Ref steht in der lokalen `.env.local`.
 - ✅ DB-Schema eingespielt (groups, members, products, events, settlements, debts)
 - ✅ RLS-Policies aktiv (Read public, Write nur Service-Role)
 - ✅ Realtime-Publication für `events` aktiviert
@@ -38,7 +38,7 @@ Die `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` sind schon au
 
 **`SUPABASE_SERVICE_ROLE_KEY`** — das ist der mächtige Key, der RLS bypasst. Den gibt's nicht per MCP, du musst ihn aus dem Dashboard holen:
 
-1. Öffne https://supabase.com/dashboard/project/ahhpzhgnqgggqnawiojk/settings/api
+1. Öffne https://supabase.com/dashboard/project/<dein-projekt>/settings/api
 2. Scroll zu "Service role key" → **Reveal** klicken → kopieren
 3. Einfügen in `.env.local` als `SUPABASE_SERVICE_ROLE_KEY=ey...`
 
@@ -52,7 +52,7 @@ In `.env.local` als `SESSION_SECRET=<ergebnis>` eintragen.
 
 **`SUPABASE_JWT_SECRET`** — wird vom Server gebraucht, um kurzlebige Realtime-Tokens zu signieren (`/api/realtime-token`). Seit dem Security-Audit am 2026-04-19 prüft die RLS-Policy auf `public.events`, dass das JWT eine passende `group_ids`-Claim hat; ohne diesen Secret sieht der Browser kein Live-Update mehr. Holen:
 
-1. https://supabase.com/dashboard/project/ahhpzhgnqgggqnawiojk/settings/api öffnen
+1. https://supabase.com/dashboard/project/<dein-projekt>/settings/api öffnen
 2. Abschnitt "JWT Settings" → "JWT Secret" → kopieren
 3. In `.env.local` als `SUPABASE_JWT_SECRET=<wert>` eintragen
 
@@ -92,7 +92,7 @@ npm run dev
 ### 7. Realtime explizit aktivieren (falls nicht bereits)
 
 Im Supabase-Dashboard:
-- https://supabase.com/dashboard/project/ahhpzhgnqgggqnawiojk/database/replication
+- https://supabase.com/dashboard/project/<dein-projekt>/database/replication
 - `supabase_realtime` → Tabelle `events` → Toggle ON
 
 Die Migration versucht das bereits per SQL, aber manche UI-Stände überschreiben das — lieber einmal checken.
@@ -171,7 +171,7 @@ https://kaffeekumpel.de/api/qr/XXXXXX?format=svg
 → Du hast die `.env.local` aus Schritt 4 noch nicht richtig ausgefüllt. `.env.local` nicht einchecken (steht in `.gitignore`).
 
 **Realtime zeigt "Offline"**
-→ Schritt 7 prüfen. Netzwerk-Tab öffnen — es sollte eine WebSocket-Verbindung zu `ahhpzhgnqgggqnawiojk.supabase.co` laufen.
+→ Schritt 7 prüfen. Netzwerk-Tab öffnen — es sollte eine WebSocket-Verbindung zu deinem Supabase-Projekt (`<dein-projekt>.supabase.co`) laufen.
 
 **PayPal-Link öffnet sich nicht / "Betrag nicht unterstützt"**
 → Manche PayPal-Apps haben Probleme mit winzigen Beträgen (<1 €). In solchen Fällen manuell via PayPal-App begleichen.
