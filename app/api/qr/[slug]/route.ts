@@ -22,8 +22,10 @@ export async function GET(
 
   const url = new URL(req.url);
   const format = url.searchParams.get("format") === "png" ? "png" : "svg";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? url.origin;
-  const target = `${appUrl}/g/${slug}`;
+  // QR-Codes landen auf gravierten Holzschildern – sie sind physisch
+  // unveränderlich und müssen deshalb immer auf den kanonischen Host
+  // zeigen, unabhängig davon, von welchem Vercel-Deploy sie generiert wurden.
+  const target = `https://kaffeekumpel.eu/g/${slug}`;
 
   if (format === "svg") {
     const svg = await QRCode.toString(target, {
