@@ -58,7 +58,11 @@ export async function GET(
   const periodParam = url.searchParams.get("period") === "year" ? "year" : "month";
   const refParam = url.searchParams.get("ref") ?? defaultRefForPeriod(periodParam);
   const preview = url.searchParams.get("preview");
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? url.origin;
+  // Recap-PDFs werden geteilt, gespeichert und gedruckt – der eingebettete
+  // QR-Code und die Footer-URL müssen unabhängig vom Deploy-Host immer auf
+  // die Produktions-Domain zeigen, sonst friert ein Vercel-Preview-Host
+  // dauerhaft im PDF ein.
+  const appUrl = "https://kaffeekumpel.eu";
 
   let recap;
   try {
