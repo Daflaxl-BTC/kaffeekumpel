@@ -3,7 +3,10 @@ import Link from "next/link";
 import { supabaseService } from "@/lib/supabase/server";
 import { readSessionCookie } from "@/lib/auth/session";
 import { computeCleaningStatus } from "@/lib/cleaning";
-import { computeSettlement } from "@/lib/settlement/calculate";
+import {
+  getCurrentPeriodData,
+  GroupNotFoundError,
+} from "@/lib/settlement/period";
 import { EventButtons } from "@/components/event-buttons";
 import { EventFeed } from "@/components/event-feed";
 import { MemberBalance } from "@/components/member-balance";
@@ -25,37 +28,32 @@ export default async function GroupPage({
   const session = await readSessionCookie(slug);
   if (!session) redirect(`/g/${slug}/join`);
 
+  let period;
+  try {
+    period = await getCurrentPeriodData(slug);
+  } catch (err) {
+    if (err instanceof GroupNotFoundError) notFound();
+    throw err;
+  }
+  const { group, members: memberList, allMembers, balances, transfers } =
+    period;
+
   const sb = supabaseService();
 
-  const { data: group } = await sb
-    .from("groups")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  if (!group) notFound();
+  const [{ data: events }, { data: products }] = await Promise.all([
+    sb
+      .from("events")
+      .select("*")
+      .eq("group_id", group.id)
+      .order("created_at", { ascending: false })
+      .limit(30),
+    sb
+      .from("products")
+      .select("*")
+      .eq("group_id", group.id)
+      .order("name"),
+  ]);
 
-  const [{ data: members }, { data: events }, { data: products }] =
-    await Promise.all([
-      sb
-        .from("members")
-        .select("*")
-        .eq("group_id", group.id)
-        .eq("active", true)
-        .order("created_at", { ascending: true }),
-      sb
-        .from("events")
-        .select("*")
-        .eq("group_id", group.id)
-        .order("created_at", { ascending: false })
-        .limit(30),
-      sb
-        .from("products")
-        .select("*")
-        .eq("group_id", group.id)
-        .order("name"),
-    ]);
-
-  const memberList = members ?? [];
   const eventList = events ?? [];
   const productList = products ?? [];
 
@@ -63,16 +61,6 @@ export default async function GroupPage({
     memberList,
     eventList.filter((e) => e.type === "cleaning"),
     group.cleaning_interval_days,
-  );
-
-  const { balances } = computeSettlement(
-    eventList.map((e) => ({
-      member_id: e.member_id,
-      type: e.type,
-      cost_cents: e.cost_cents,
-    })),
-    group.coffee_price_cents,
-    memberList.map((m) => m.id),
   );
 
   return (
@@ -137,8 +125,11 @@ export default async function GroupPage({
           </h2>
           <MemberBalance
             members={memberList}
+            allMembers={allMembers}
             balances={balances}
+            transfers={transfers}
             currency={group.currency}
+            currentMemberId={session.member_id}
           />
         </section>
 
