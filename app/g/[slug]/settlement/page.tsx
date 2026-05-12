@@ -1,12 +1,15 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { supabaseService } from "@/lib/supabase/server";
 import { readSessionCookie } from "@/lib/auth/session";
-import { computeSettlement } from "@/lib/settlement/calculate";
-import { buildPaypalMeLink } from "@/lib/settlement/paypal";
+import {
+  getCurrentPeriodData,
+  GroupNotFoundError,
+} from "@/lib/settlement/period";
+import { buildPaypalMeLink, isValidPaypalHandle } from "@/lib/settlement/paypal";
 import { formatEuro } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { OpenPaymentsTrigger } from "@/components/open-payments/open-payments-trigger";
 import { FinalizeButton } from "./finalize-button";
 
 export default async function SettlementPage({
@@ -18,53 +21,20 @@ export default async function SettlementPage({
   const session = await readSessionCookie(slug);
   if (!session) redirect(`/g/${slug}/join`);
 
-  const sb = supabaseService();
+  let period;
+  try {
+    period = await getCurrentPeriodData(slug);
+  } catch (err) {
+    if (err instanceof GroupNotFoundError) notFound();
+    throw err;
+  }
 
-  const { data: group } = await sb
-    .from("groups")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-  if (!group) notFound();
+  const { group, coveredFrom, members, allMembers, balances, transfers } =
+    period;
 
-  // Aktueller Abrechnungs-Zeitraum: seit letztem Settlement bis jetzt
-  const { data: lastSettlement } = await sb
-    .from("settlements")
-    .select("finalized_at, covered_to")
-    .eq("group_id", group.id)
-    .order("finalized_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const coveredFrom = lastSettlement
-    ? new Date(lastSettlement.covered_to)
-    : new Date(group.created_at);
-
-  const [{ data: members }, { data: events }] = await Promise.all([
-    sb.from("members").select("*").eq("group_id", group.id).eq("active", true),
-    sb
-      .from("events")
-      .select("*")
-      .eq("group_id", group.id)
-      .gt("created_at", coveredFrom.toISOString()),
-  ]);
-
-  const memberList = members ?? [];
-  const eventList = events ?? [];
-
-  const { balances, transfers } = computeSettlement(
-    eventList.map((e) => ({
-      member_id: e.member_id,
-      type: e.type,
-      cost_cents: e.cost_cents,
-    })),
-    group.coffee_price_cents,
-    memberList.map((m) => m.id),
-  );
-
-  const memberById = new Map(memberList.map((m) => [m.id, m]));
+  const memberById = new Map(allMembers.map((m) => [m.id, m]));
   const isAdmin =
-    memberList.find((m) => m.id === session.member_id)?.role === "admin";
+    members.find((m) => m.id === session.member_id)?.role === "admin";
 
   return (
     <main className="min-h-screen max-w-2xl mx-auto px-4 pt-6 pb-24">
@@ -94,11 +64,8 @@ export default async function SettlementPage({
             if (!m) return null;
             const positive = b.balance_cents > 0;
             const zero = b.balance_cents === 0;
-            return (
-              <div
-                key={b.member_id}
-                className="flex items-center justify-between bg-white/80 rounded-xl p-3 border border-kaffee-100"
-              >
+            const row = (
+              <div className="flex items-center justify-between bg-white/80 rounded-xl p-3 border border-kaffee-100">
                 <span className="text-kaffee-900 font-medium">{m.name}</span>
                 <span
                   className={
@@ -116,6 +83,19 @@ export default async function SettlementPage({
                       : `− ${formatEuro(-b.balance_cents, group.currency)}`}
                 </span>
               </div>
+            );
+            return (
+              <OpenPaymentsTrigger
+                key={b.member_id}
+                member={m}
+                isCurrentUser={m.id === session.member_id}
+                currentMemberId={session.member_id}
+                transfers={transfers}
+                members={allMembers}
+                currency={group.currency}
+              >
+                {row}
+              </OpenPaymentsTrigger>
             );
           })}
         </div>
@@ -138,7 +118,9 @@ export default async function SettlementPage({
               const to = memberById.get(t.to_member_id);
               if (!from || !to) return null;
               const amILocus = from.id === session.member_id;
-              const paypalReady = amILocus && to.paypal_handle;
+              const handleValid =
+                !!to.paypal_handle && isValidPaypalHandle(to.paypal_handle);
+              const paypalReady = amILocus && handleValid;
               return (
                 <div
                   key={i}
@@ -155,16 +137,20 @@ export default async function SettlementPage({
                   {paypalReady ? (
                     <a
                       href={buildPaypalMeLink({
-                        handle: to.paypal_handle!,
+                        handle: to.paypal_handle as string,
                         amount_cents: t.amount_cents,
-                        currency: group.currency,
+                        currency: group.currency as
+                          | "EUR"
+                          | "CHF"
+                          | "USD"
+                          | "GBP",
                       })}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <Button size="sm">Per PayPal zahlen</Button>
                     </a>
-                  ) : amILocus && !to.paypal_handle ? (
+                  ) : amILocus && !handleValid ? (
                     <span className="text-xs text-kaffee-700/70 text-right max-w-[140px]">
                       {to.name} hat noch keinen PayPal-Handle hinterlegt
                     </span>
