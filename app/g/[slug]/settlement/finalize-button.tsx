@@ -23,8 +23,8 @@ export function FinalizeButton({ slug }: { slug: string }) {
   };
 
   return (
-    <Button onClick={handle} disabled={pending} size="md">
-      {pending ? "…" : "Jetzt abschließen"}
+    <Button onClick={handle} loading={pending} size="md">
+      {pending ? "Schließt ab…" : "Jetzt abschließen"}
     </Button>
   );
 }

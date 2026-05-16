@@ -91,8 +91,8 @@ export function PurchaseForm({ slug, products, currency }: Props) {
           className="col-span-2 sm:col-span-1 w-full min-w-0 rounded-xl border border-kaffee-100 bg-white px-3 py-2 text-sm"
         />
       </div>
-      <Button type="submit" size="sm" disabled={pending} className="w-full">
-        {pending ? "…" : "+ Eintragen"}
+      <Button type="submit" size="sm" loading={pending} className="w-full">
+        {pending ? "Trägt ein…" : "+ Eintragen"}
       </Button>
     </form>
   );

@@ -138,9 +138,9 @@ export function RecapDownload({ slug }: Props) {
           variant="primary"
           size="sm"
           onClick={onDownload}
-          disabled={pending}
+          loading={pending}
         >
-          {pending ? "Generiere ..." : "Rückblick als PDF"}
+          {pending ? "Generiere…" : "Rückblick als PDF"}
         </Button>
       </div>
 

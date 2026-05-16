@@ -17,7 +17,7 @@ export function CleaningBanner({ status, currentMemberId }: Props) {
       ? "bg-red-50 border-red-200 text-red-900"
       : urgency === "due_soon"
         ? "bg-amber-50 border-amber-200 text-amber-900"
-        : "bg-emerald-50 border-emerald-200 text-emerald-900";
+        : "bg-leaf-light/15 border-leaf/30 text-leaf-dark";
 
   return (
     <div className={`rounded-2xl border px-4 py-3 flex items-center gap-3 ${tint}`}>
