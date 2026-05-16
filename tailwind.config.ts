@@ -30,6 +30,21 @@ const config: Config = {
       fontFamily: {
         sans: ["system-ui", "-apple-system", "Segoe UI", "sans-serif"],
       },
+      keyframes: {
+        "tap-pulse": {
+          "0%": { opacity: "0.6", transform: "scale(0.9)" },
+          "60%": { opacity: "0.25", transform: "scale(1.05)" },
+          "100%": { opacity: "0", transform: "scale(1.15)" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "tap-pulse": "tap-pulse 700ms ease-out forwards",
+        "fade-in-up": "fade-in-up 200ms ease-out",
+      },
     },
   },
   plugins: [],

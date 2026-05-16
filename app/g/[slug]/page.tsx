@@ -98,21 +98,21 @@ export default async function GroupPage({
           </Card>
         )}
 
-        <header className="mb-4 flex items-center justify-between">
+        <header className="mb-4 flex items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-kaffee-900">
               {group.name}
             </h1>
-            <p className="text-sm text-kaffee-700">
+            <p className="text-sm text-kaffee-800">
               Hi {session.name} ☕ · Code{" "}
               <span className="font-mono">{slug}</span>
             </p>
           </div>
           <Link
             href={`/g/${slug}/profile`}
-            className="text-sm underline text-kaffee-700"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-kaffee-100 text-kaffee-900 px-3 py-1.5 text-sm font-medium hover:bg-kaffee-200 transition-colors"
           >
-            Profil
+            Mein Bereich
           </Link>
         </header>
 
@@ -132,7 +132,7 @@ export default async function GroupPage({
         </section>
 
         <section className="mt-6">
-          <h2 className="text-sm font-semibold text-kaffee-700 mb-2">
+          <h2 className="text-base font-semibold text-kaffee-900 mb-2">
             Aktueller Stand
           </h2>
           <MemberBalance
@@ -143,7 +143,7 @@ export default async function GroupPage({
         </section>
 
         <section className="mt-6">
-          <h2 className="text-sm font-semibold text-kaffee-700 mb-2">
+          <h2 className="text-base font-semibold text-kaffee-900 mb-2">
             Einkauf eintragen
           </h2>
           <PurchaseForm
@@ -155,10 +155,10 @@ export default async function GroupPage({
 
         <section className="mt-6">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-kaffee-700">Aktivität</h2>
+            <h2 className="text-base font-semibold text-kaffee-900">Aktivität</h2>
             <Link
               href={`/g/${slug}/settlement`}
-              className="text-sm underline text-kaffee-700"
+              className="text-sm font-medium text-kaffee-800 hover:text-kaffee-900 underline-offset-4 hover:underline"
             >
               Abrechnung ansehen →
             </Link>

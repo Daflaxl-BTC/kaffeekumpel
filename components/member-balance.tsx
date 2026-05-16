@@ -20,16 +20,16 @@ export function MemberBalance({ members, balances, currency }: Props) {
         return (
           <li
             key={m.id}
-            className="flex items-center justify-between bg-white/80 rounded-xl px-3 py-2 border border-kaffee-100"
+            className="flex items-center justify-between bg-white rounded-xl px-3 py-2 border border-kaffee-100"
           >
             <span className="text-sm text-kaffee-900 font-medium">{m.name}</span>
             <span
-              className={`text-sm tabular-nums ${
+              className={`text-sm tabular-nums font-semibold rounded-md px-2 py-0.5 ${
                 zero
-                  ? "text-kaffee-700"
+                  ? "text-kaffee-700 bg-kaffee-50"
                   : positive
-                    ? "text-green-700 font-semibold"
-                    : "text-red-700 font-semibold"
+                    ? "text-leaf-dark bg-leaf-light/15"
+                    : "text-red-800 bg-red-50"
               }`}
             >
               {zero
