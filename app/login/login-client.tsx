@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, CameraOff, Keyboard } from "lucide-react";
+import { Camera, CameraOff, Keyboard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
@@ -28,6 +28,7 @@ export function LoginClient() {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState("");
+  const [navigating, startNavigation] = useTransition();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -135,7 +136,9 @@ export function LoginClient() {
       toast.error("Der Code hat 6 Zeichen (Buchstaben & Zahlen).");
       return;
     }
-    router.push(`/g/${slug}`);
+    startNavigation(() => {
+      router.push(`/g/${slug}`);
+    });
   };
 
   return (
@@ -221,9 +224,15 @@ export function LoginClient() {
           variant="secondary"
           size="lg"
           className="w-full"
-          disabled={normalizeSlug(manualCode).length !== 6}
+          disabled={navigating || normalizeSlug(manualCode).length !== 6}
         >
-          Zur Gruppe →
+          {navigating ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Lädt …
+            </>
+          ) : (
+            "Zur Gruppe →"
+          )}
         </Button>
       </form>
     </div>
