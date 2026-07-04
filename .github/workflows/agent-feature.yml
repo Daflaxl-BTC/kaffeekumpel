@@ -1,0 +1,57 @@
+name: Agent — feature
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_hint:
+        description: "Optional focus for this run (e.g. 'improve onboarding screen')"
+        required: false
+        default: ""
+  # --- Enable after first successful manual run + secret is set ---
+  # schedule:
+  #   - cron: "0 6 * * 1"   # weekly Monday 06:00 UTC
+
+concurrency:
+  group: agent-feature
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            ROLE: feature
+            FOCUS (optional): ${{ github.event.inputs.task_hint }}
+
+            You are the feature engineer for this product. Ship one small,
+            user-visible improvement that fits the product's existing direction.
+            Read the README, recent commits, and any roadmap/TODO notes to pick
+            something valuable and in-scope. Prefer completing a half-done feature
+            or closing an obvious gap over inventing something new. Include or
+            update tests. Do not add dependencies without a clear need and a note
+            in the PR.
+
+            HARD RULES (apply to every role):
+            - Work on a NEW branch named `agent/feature/<yyyy-mm-dd>-<short-slug>`.
+            - NEVER commit or push to the default branch. Open a Pull Request instead.
+            - Keep the change small and focused — one coherent improvement per run.
+            - If tests/lint exist, run them and make them pass before opening the PR.
+            - PR description must explain WHAT changed and WHY, and list any risks.
+            - If you find nothing worth changing, do NOT open an empty PR — exit cleanly.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Edit,Write,Bash(npm:*),Bash(pnpm:*),Bash(git:*),Bash(gh pr:*)"
