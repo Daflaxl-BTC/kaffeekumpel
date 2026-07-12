@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Self-hosted auf Hetzner: standalone-Build kopiert nur die nötigen
+  // node_modules in .next/standalone → schlankes Docker-Image ohne dev-deps.
+  output: "standalone",
   experimental: {
     typedRoutes: false,
   },

@@ -1,0 +1,62 @@
+# Kaffeekumpel — Hetzner Deploy (Next.js-App + Caddy TLS).
+#
+# Self-hosted Supabase läuft aus dem offiziellen supabase/docker Compose
+# (Postgres, Realtime, Storage, Kong, Studio) und hängt am externen Netz
+# `supabase_default`. Die App redet über KONG (http://kong:8000) mit Supabase,
+# darum joinen beide Compose-Projekte dasselbe Netz.
+#
+# Setup-Reihenfolge:
+#   1) git clone --depth 1 https://github.com/supabase/supabase
+#      cd supabase/docker && cp .env.example .env  (Secrets setzen!)
+#      docker compose up -d   → legt Netz `supabase_default` an
+#   2) Migrationen einspielen: supabase/migrations/*.sql gegen Postgres
+#   3) hier: docker compose up -d --build
+#
+# Secrets kommen aus .env (NICHT committen — siehe .env.example).
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    restart: unless-stopped
+    environment:
+      # serverseitig (nie ins Client-Bundle):
+      SESSION_SECRET: ${SESSION_SECRET}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      # öffentlich, aber zur Laufzeit auch gesetzt:
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    expose:
+      - "3000"
+    networks:
+      - supabase_default
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  web:
+  supabase_default:
+    external: true

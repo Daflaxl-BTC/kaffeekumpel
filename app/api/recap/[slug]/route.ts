@@ -7,14 +7,14 @@
  *   ?preview  – "html" liefert das HTML direkt (Debug-Hilfe),
  *               sonst PDF als application/pdf mit Download-Header.
  *
- * Auth: signed Session-Cookie für den Slug muss vorhanden sein – der
- * Recap enthält Beträge und Namen, also nicht öffentlich.
+ * Auth: Bearer-Token (App) oder Session-Cookie (Web) für den Slug muss
+ * vorhanden sein – der Recap enthält Beträge und Namen, also nicht öffentlich.
  *
  * Runtime: nodejs (Puppeteer braucht's).
  */
 
 import { NextResponse } from "next/server";
-import { readSessionCookie } from "@/lib/auth/session";
+import { optionalSession } from "@/lib/api/http";
 import { isValidSlug } from "@/lib/slug";
 import { buildRecapInput } from "@/lib/recap/aggregate";
 import { enrichRecapWithClaude } from "@/lib/recap/generate";
@@ -47,7 +47,7 @@ export async function GET(
     return new NextResponse("Invalid slug", { status: 400 });
   }
 
-  const session = await readSessionCookie(slug);
+  const session = await optionalSession(req, slug);
   if (!session) {
     return new NextResponse("Unauthorized – tritt erst der Gruppe bei.", {
       status: 401,

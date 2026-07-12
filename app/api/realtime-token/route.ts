@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SignJWT } from "jose";
-import { readSessionCookie } from "@/lib/auth/session";
+import { optionalSession } from "@/lib/api/http";
 
 /**
  * Gibt ein kurzlebiges JWT (HS256, 1h) zurück, mit dem der Browser-Realtime-
@@ -8,7 +8,8 @@ import { readSessionCookie } from "@/lib/auth/session";
  * `app_metadata.group_ids` aus dem JWT und lässt nur Updates passen, die
  * zu einer dieser Gruppen gehören.
  *
- * Ohne gültiges Session-Cookie → 401. Ohne SUPABASE_JWT_SECRET → 500.
+ * Auth: Bearer-Token (App) oder Session-Cookie (Web). Ohne beides → 401.
+ * Ohne SUPABASE_JWT_SECRET → 500.
  *
  * Rate-Limit: 6 Requests pro Minute pro IP (in-memory, Best-Effort pro
  * Lambda-Instanz). Kein harter DoS-Schutz, nur ein Bremspedal gegen
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
-  const session = await readSessionCookie();
+  const session = await optionalSession(req);
   if (!session) {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   }

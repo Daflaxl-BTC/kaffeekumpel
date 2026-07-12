@@ -1,0 +1,8 @@
+# Caddy: Auto-TLS (Let's Encrypt) für kaffeekumpel.eu → Next.js-App.
+# apple-app-site-association muss als application/json ohne Suffix ausliefern —
+# das erledigt der Next.js-Route-Handler (app/.well-known/...), Caddy reicht nur durch.
+
+kaffeekumpel.eu, www.kaffeekumpel.eu {
+	encode zstd gzip
+	reverse_proxy app:3000
+}
