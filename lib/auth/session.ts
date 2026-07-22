@@ -1,83 +1,133 @@
+import { jwtVerify, SignJWT } from 'jose';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'crypto';
+
+const SESSION_SECRET = new TextEncoder().encode(
+  process.env.SESSION_SECRET || 'dev-secret-change-in-production'
+);
+
+const COOKIE_NAME = 'kk-session';
+const SESSION_DURATION = 365 * 24 * 60 * 60 * 1000; // 1 year
+
+export interface AuthSession {
+  success: boolean;
+  memberId: string;
+  memberName: string;
+  token?: string;
+  error?: string;
+}
+
 /**
- * Minimale "Session" für Kaffeekumpel.
- *
- * Statt Magic-Link/OAuth: Wir packen `{ group_id, slug, member_id }` in ein
- * HS256-JWT (via `jose`), signieren mit SESSION_SECRET, legen es als
- * HttpOnly-Cookie mit 90 Tage Ablauf. SameSite=Lax, damit QR→Scan→Beitreten
- * auf demselben Gerät funktioniert.
- *
- * Das JWT ist scoped auf den Slug — wer das Cookie auf Gruppe A klaut, kann
- * nicht Gruppe B manipulieren.
+ * Create a signed JWT session token
  */
+export async function createSessionToken(
+  memberId: string,
+  memberName: string
+): Promise<string> {
+  const token = await new SignJWT({
+    sub: memberId,
+    name: memberName,
+    iat: Math.floor(Date.now() / 1000),
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('365d')
+    .sign(SESSION_SECRET);
 
-import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
-
-const COOKIE_NAME = "kk_session";
-const MAX_AGE = 60 * 60 * 24 * 90; // 90 Tage
-
-export interface SessionPayload {
-  group_id: string;
-  slug: string;
-  member_id: string;
-  name: string;
+  return token;
 }
 
-function secretKey(): Uint8Array {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret || secret.length < 32) {
-    const envKeys = Object.keys(process.env).filter((k) => k.includes("SESSION")).join(",") || "none";
-    throw new Error(
-      `SESSION_SECRET fehlt oder zu kurz (min. 32). Gefunden: length=${secret?.length ?? "undefined"}, matching_env_keys=[${envKeys}]`,
-    );
-  }
-  return new TextEncoder().encode(secret);
-}
-
-export async function signSession(payload: SessionPayload): Promise<string> {
-  return await new SignJWT({ ...payload })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE}s`)
-    .sign(secretKey());
-}
-
-export async function verifySession(
-  token: string,
-  expectedSlug?: string,
-): Promise<SessionPayload | null> {
+/**
+ * Verify and decode JWT session token
+ */
+export async function verifySessionToken(token: string): Promise<{
+  memberId: string;
+  memberName: string;
+} | null> {
   try {
-    const { payload } = await jwtVerify(token, secretKey());
-    const session = payload as unknown as SessionPayload;
-    if (expectedSlug && session.slug !== expectedSlug) return null;
-    return session;
-  } catch {
+    const verified = await jwtVerify(token, SESSION_SECRET);
+    const payload = verified.payload as any;
+
+    if (!payload.sub || !payload.name) {
+      return null;
+    }
+
+    return {
+      memberId: payload.sub as string,
+      memberName: payload.name as string,
+    };
+  } catch (err) {
+    console.error('[verifySessionToken] JWT verification failed:', err);
     return null;
   }
 }
 
-export async function setSessionCookie(payload: SessionPayload): Promise<void> {
-  const token = await signSession(payload);
-  const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
+/**
+ * Get or create a session from request cookies
+ * Returns session if valid, creates new session if missing/invalid
+ */
+export async function verifyAuth(request: NextRequest): Promise<AuthSession> {
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get(COOKIE_NAME)?.value;
+
+    // Try to verify existing session
+    if (sessionCookie) {
+      const session = await verifySessionToken(sessionCookie);
+      if (session) {
+        return {
+          success: true,
+          memberId: session.memberId,
+          memberName: session.memberName,
+          token: sessionCookie,
+        };
+      }
+    }
+
+    // Create new anonymous session
+    const memberId = uuidv4();
+    const memberName = `Nutzer${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+    const token = await createSessionToken(memberId, memberName);
+
+    // Set cookie (will be picked up in response)
+    cookieStore.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: SESSION_DURATION,
+      path: '/',
+    });
+
+    return {
+      success: true,
+      memberId,
+      memberName,
+      token,
+    };
+  } catch (err) {
+    console.error('[verifyAuth] Error:', err);
+    return {
+      success: false,
+      memberId: '',
+      memberName: '',
+      error: 'Authentifizierung fehlgeschlagen',
+    };
+  }
+}
+
+/**
+ * Middleware to attach session to response
+ */
+export async function attachSessionToResponse(
+  response: NextResponse,
+  token: string
+): Promise<NextResponse> {
+  response.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: MAX_AGE,
-    path: "/",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: SESSION_DURATION,
+    path: '/',
   });
-}
-
-export async function readSessionCookie(
-  expectedSlug?: string,
-): Promise<SessionPayload | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return verifySession(token, expectedSlug);
-}
-
-export async function clearSessionCookie(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  return response;
 }
