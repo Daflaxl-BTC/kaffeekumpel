@@ -1,49 +1,62 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
-export default function NewGroupError({
+export default function Error({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const isKeyInvalid = error.message === "SUPABASE_KEY_INVALID";
+  useEffect(() => {
+    // Log the error to console for debugging
+    console.error('[/new Error Boundary]', error);
+  }, [error]);
 
   return (
-    <main className="min-h-screen px-6 py-12 max-w-md mx-auto">
-      <a
-        href="/"
-        className="text-sm text-kaffee-700 hover:underline inline-block mb-4"
-      >
-        ← zurück
-      </a>
-      <div className="bg-white/80 rounded-2xl p-6 border border-kaffee-100">
-        <h1 className="text-2xl font-bold text-kaffee-900 mb-3">
-          Das hat gerade nicht geklappt.
-        </h1>
-        {isKeyInvalid ? (
-          <p className="text-kaffee-700 mb-6">
-            Die Verbindung zur Datenbank ist aktuell nicht konfiguriert.
-            Der Betreiber wurde benachrichtigt — versuch's in ein paar
-            Minuten nochmal.
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <div className="p-6 text-center">
+          <h1 className="text-2xl font-bold text-red-700 mb-2">Fehler beim Erstellen</h1>
+          <p className="text-gray-600 text-sm mb-4">
+            Es gab ein Problem bei der Erstellung deiner Kaffeekasse.
           </p>
-        ) : (
-          <p className="text-kaffee-700 mb-6">
-            Wir konnten deine Gruppe nicht anlegen. Probier es nochmal —
-            und wenn's weiter hakt, schreib uns kurz.
+
+          <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded text-left">
+            <p className="text-xs text-red-600 font-mono break-words">
+              {error.message || 'Unbekannter Fehler'}
+            </p>
+            {error.digest && (
+              <p className="text-xs text-gray-500 mt-2">ID: {error.digest}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Button
+              onClick={reset}
+              className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              Nochmal versuchen
+            </Button>
+            <Button
+              onClick={() => (window.location.href = '/')}
+              variant="outline"
+              className="w-full"
+            >
+              Zur Startseite
+            </Button>
+          </div>
+
+          <p className="text-xs text-gray-500 mt-4">
+            Wenn der Fehler wiederholt auftritt, kontaktiere uns:
+            <br />
+            felix.bredl@gmail.com
           </p>
-        )}
-        {error.digest && (
-          <p className="text-xs text-kaffee-700/60 mb-4 font-mono">
-            Ref: {error.digest}
-          </p>
-        )}
-        <Button onClick={reset} size="lg" className="w-full">
-          Nochmal versuchen
-        </Button>
-      </div>
-    </main>
+        </div>
+      </Card>
+    </div>
   );
 }
