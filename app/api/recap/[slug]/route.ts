@@ -20,6 +20,12 @@ import { buildRecapInput } from "@/lib/recap/aggregate";
 import { enrichRecapWithClaude } from "@/lib/recap/generate";
 import { renderRecapHtml } from "@/lib/recap/template";
 import { renderHtmlToPdf } from "@/lib/recap/pdf";
+import {
+  clientIpFromHeaders,
+  rateLimit,
+  sanitizeErrorMsg,
+  validateRef,
+} from "@/lib/recap/guard";
 import type { RecapPeriod } from "@/lib/recap/types";
 
 export const runtime = "nodejs";
@@ -58,6 +64,25 @@ export async function GET(
   const periodParam = url.searchParams.get("period") === "year" ? "year" : "month";
   const refParam = url.searchParams.get("ref") ?? defaultRefForPeriod(periodParam);
   const preview = url.searchParams.get("preview");
+
+  // Strikte Eingangs-Validierung von ?ref bevor wir Claude-Tokens ausgeben
+  // oder Chromium hochfahren. parsePeriod() in aggregate.ts validiert auch –
+  // hier ist es Defense-in-Depth.
+  if (!validateRef(periodParam, refParam)) {
+    return new NextResponse("Invalid ref", { status: 400 });
+  }
+
+  // Rate-Limit pro (slug, IP). Schützt das Anthropic-Token-Budget gegen
+  // versehentliche Loop-Klicks oder Schnell-Klick-Skripte. Die eigentliche
+  // DDoS-Abwehr macht Vercel/Cloudflare davor.
+  const ip = clientIpFromHeaders(req.headers);
+  const limit = rateLimit(`${slug}:${ip}`);
+  if (!limit.ok) {
+    return new NextResponse("Zu viele Anfragen. Probier's gleich nochmal.", {
+      status: 429,
+      headers: { "Retry-After": String(limit.retryAfterSec) },
+    });
+  }
   // Recap-PDFs werden geteilt, gespeichert und gedruckt – der eingebettete
   // QR-Code und die Footer-URL müssen unabhängig vom Deploy-Host immer auf
   // die Produktions-Domain zeigen, sonst friert ein Vercel-Preview-Host
@@ -74,12 +99,17 @@ export async function GET(
     });
     recap = await enrichRecapWithClaude(base);
   } catch (err) {
-    console.error("[recap] Aggregation/Claude failed", err);
-    return new NextResponse(
-      "Recap konnte nicht generiert werden: " +
-        (err instanceof Error ? err.message : "unbekannter Fehler"),
-      { status: 500 },
-    );
+    // Volle Details ins Server-Log (Stack, Pfade) – nach außen nur eine
+    // generische Meldung, damit weder Datenbank-Layout noch interne Pfade
+    // im UI auftauchen.
+    console.error("[recap] Aggregation/Claude failed", {
+      slug,
+      period: periodParam,
+      ref: refParam,
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return new NextResponse(sanitizeErrorMsg("aggregate"), { status: 500 });
   }
 
   const html = renderRecapHtml(recap);
@@ -94,12 +124,14 @@ export async function GET(
   try {
     pdf = await renderHtmlToPdf(html);
   } catch (err) {
-    console.error("[recap] PDF rendering failed", err);
-    return new NextResponse(
-      "PDF-Rendering fehlgeschlagen: " +
-        (err instanceof Error ? err.message : "unbekannter Fehler"),
-      { status: 500 },
-    );
+    console.error("[recap] PDF rendering failed", {
+      slug,
+      period: periodParam,
+      ref: refParam,
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return new NextResponse(sanitizeErrorMsg("render"), { status: 500 });
   }
 
   const fileName = `kaffeekumpel-${slug}-${refParam}.pdf`;

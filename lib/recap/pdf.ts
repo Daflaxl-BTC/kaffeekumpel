@@ -71,6 +71,47 @@ interface SparticuzChromium {
   executablePath: (path?: string) => Promise<string>;
 }
 
+/**
+ * Verifiziert, dass die brotli-Archive von @sparticuz/chromium tatsächlich
+ * im Lambda-Bundle liegen. Falls Vercels File-Tracer sie weglässt, scheitert
+ * der Browser-Start sonst mit kryptischem `libnss3.so`-Fehler. Hier wollen wir
+ * stattdessen klar sehen, dass es ein Bundling-Problem ist.
+ */
+async function assertChromiumBinPresent(): Promise<void> {
+  const { access } = await import("node:fs/promises");
+  const path = await import("node:path");
+  // Die Quelle liegt in node_modules/@sparticuz/chromium/bin/. Wir lesen den
+  // Modul-Pfad dynamisch über require.resolve, damit pnpm-/yarn-Layouts auch
+  // funktionieren.
+  const { createRequire } = await import("node:module");
+  const req = createRequire(import.meta.url);
+  let binDir: string;
+  try {
+    const pkgJson = req.resolve("@sparticuz/chromium/package.json");
+    binDir = path.join(path.dirname(pkgJson), "bin");
+  } catch {
+    // Wenn wir den Pfad nicht auflösen können, bringt uns weiteres Prüfen
+    // nichts – der eigentliche Fehler kommt gleich.
+    return;
+  }
+  const required = ["chromium.br", "libnss3.so.br", "swiftshader.tar.br"];
+  const missing: string[] = [];
+  for (const file of required) {
+    try {
+      await access(path.join(binDir, file));
+    } catch {
+      missing.push(file);
+    }
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `Chromium-Bundle unvollständig: ${missing.join(", ")} fehlt in ${binDir}. ` +
+        `Vermutlich hat Next.js die brotli-Archive nicht ins Lambda gepackt – ` +
+        `prüfe outputFileTracingIncludes in next.config.ts.`,
+    );
+  }
+}
+
 async function launchServerless(): Promise<Browser> {
   const [puppeteer, chromiumMod] = await Promise.all([
     import("puppeteer-core"),
@@ -80,10 +121,12 @@ async function launchServerless(): Promise<Browser> {
   // die TypeScript-Typen sind aber das Class-Shape – runtime-lookup.
   const chromium = (chromiumMod as unknown as { default: SparticuzChromium })
     .default;
+  await assertChromiumBinPresent();
+  const execPath = await chromium.executablePath();
   return puppeteer.default.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
+    executablePath: execPath,
     headless: chromium.headless as LaunchOptions["headless"],
   });
 }
