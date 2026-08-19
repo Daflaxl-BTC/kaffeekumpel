@@ -1,49 +1,79 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle } from 'lucide-react';
 
-export default function NewGroupError({
-  error,
-  reset,
-}: {
+interface ErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
-  const isKeyInvalid = error.message === "SUPABASE_KEY_INVALID";
+}
+
+export default function CreateGroupError({ error, reset }: ErrorProps) {
+  useEffect(() => {
+    // Log error server-side for monitoring
+    console.error('Create group error:', {
+      message: error.message,
+      stack: error.stack,
+      digest: error.digest,
+      timestamp: new Date().toISOString(),
+    });
+  }, [error]);
 
   return (
-    <main className="min-h-screen px-6 py-12 max-w-md mx-auto">
-      <a
-        href="/"
-        className="text-sm text-kaffee-700 hover:underline inline-block mb-4"
-      >
-        ← zurück
-      </a>
-      <div className="bg-white/80 rounded-2xl p-6 border border-kaffee-100">
-        <h1 className="text-2xl font-bold text-kaffee-900 mb-3">
-          Das hat gerade nicht geklappt.
-        </h1>
-        {isKeyInvalid ? (
-          <p className="text-kaffee-700 mb-6">
-            Die Verbindung zur Datenbank ist aktuell nicht konfiguriert.
-            Der Betreiber wurde benachrichtigt — versuch's in ein paar
-            Minuten nochmal.
-          </p>
-        ) : (
-          <p className="text-kaffee-700 mb-6">
-            Wir konnten deine Gruppe nicht anlegen. Probier es nochmal —
-            und wenn's weiter hakt, schreib uns kurz.
-          </p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+      <div className="w-full max-w-md">
+        {/* Error Icon & Header */}
+        <div className="flex flex-col items-center gap-4 mb-8">
+          <div className="p-3 bg-red-100 rounded-full">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Oops! Etwas ist schiefgelaufen</h1>
+            <p className="text-gray-600">
+              Wir konnten deine Kaffeekasse nicht erstellen. Bitte versuche es erneut.
+            </p>
+          </div>
+        </div>
+
+        {/* Error Details (Development Only) */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-6 p-4 bg-gray-100 rounded-lg border border-gray-300">
+            <p className="text-xs font-mono text-gray-700 break-words">
+              <span className="font-bold">Error:</span> {error.message}
+            </p>
+            {error.digest && (
+              <p className="text-xs font-mono text-gray-600 mt-2">
+                <span className="font-bold">Digest:</span> {error.digest}
+              </p>
+            )}
+          </div>
         )}
-        {error.digest && (
-          <p className="text-xs text-kaffee-700/60 mb-4 font-mono">
-            Ref: {error.digest}
-          </p>
-        )}
-        <Button onClick={reset} size="lg" className="w-full">
-          Nochmal versuchen
-        </Button>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={reset}
+            className="w-full px-4 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors flex items-center justify-center gap-2"
+          >
+            Erneut versuchen
+          </button>
+          <Link href="/">
+            <Button variant="outline" className="w-full">
+              Zurück zur Startseite
+            </Button>
+          </Link>
+        </div>
+
+        {/* Help Text */}
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Wenn das Problem weiterhin besteht, kontaktiere uns unter{' '}
+          <a href="mailto:felix.bredl@gmail.com" className="text-amber-600 hover:underline">
+            felix.bredl@gmail.com
+          </a>
+        </p>
       </div>
-    </main>
+    </div>
   );
 }
