@@ -1,82 +1,110 @@
+"use client";
+
+import { useActionState, useTransition } from "react";
 import { createGroup } from "./actions";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { AlertCircle, Loader2 } from "lucide-react";
+
+interface ActionState {
+  success?: boolean;
+  error?: string;
+  slug?: string;
+  token?: string;
+}
 
 export default function NewGroupPage() {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState<ActionState, FormData>(async (prevState, formData) => {
+    const result = await createGroup(formData);
+    return result as ActionState;
+  }, {});
+
+  // Redirect on success
+  useEffect(() => {
+    if (state.success && state.slug) {
+      const url = `/g/${state.slug}`;
+      // Set cookie with token if provided
+      if (state.token) {
+        document.cookie = `session=${state.token}; path=/; max-age=31536000; HttpOnly; SameSite=Lax`;
+      }
+      router.push(url);
+    }
+  }, [state.success, state.slug, state.token, router]);
+
   return (
-    <main className="min-h-screen px-6 py-12 max-w-md mx-auto">
-      <a
-        href="/"
-        className="text-sm text-kaffee-700 hover:underline inline-block mb-4"
-      >
-        ← zurück
-      </a>
-      <h1 className="text-3xl font-bold text-kaffee-900 mb-2">
-        Neue Gruppe anlegen
-      </h1>
-      <p className="text-kaffee-700 mb-8">
-        In 60 Sekunden fertig. Du kannst später alles ändern.
-      </p>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-2 text-gray-900">☕ Neue Kaffeekasse</h1>
+          <p className="text-gray-600 mb-6">Für deine WG, dein Büro oder deine Crew.</p>
 
-      <form action={createGroup} className="space-y-5 bg-white/80 rounded-2xl p-6 border border-kaffee-100">
-        <div>
-          <label
-            htmlFor="groupName"
-            className="block text-sm font-medium text-kaffee-900 mb-1"
-          >
-            Name der Gruppe
-          </label>
-          <input
-            id="groupName"
-            name="groupName"
-            required
-            maxLength={80}
-            placeholder="z.B. WG Bahnhofstraße oder Büro 2. OG"
-            className="w-full rounded-xl border border-kaffee-100 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaffee-500"
-          />
-        </div>
+          {/* Error Alert */}
+          {state.error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-900">Fehler beim Erstellen</p>
+                <p className="text-sm text-red-800 mt-1">{state.error}</p>
+              </div>
+            </div>
+          )}
 
-        <div>
-          <label
-            htmlFor="myName"
-            className="block text-sm font-medium text-kaffee-900 mb-1"
-          >
-            Dein Name
-          </label>
-          <input
-            id="myName"
-            name="myName"
-            required
-            maxLength={50}
-            placeholder="Felix"
-            className="w-full rounded-xl border border-kaffee-100 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaffee-500"
-          />
-        </div>
+          <form action={formAction} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Gruppen-Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="z. B. WG Hauptstr. 42"
+                required
+                disabled={isPending}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
 
-        <div>
-          <label
-            htmlFor="coffeePrice"
-            className="block text-sm font-medium text-kaffee-900 mb-1"
-          >
-            Preis pro Kaffee (in Euro)
-          </label>
-          <input
-            id="coffeePrice"
-            name="coffeePrice"
-            type="number"
-            step="0.10"
-            min="0"
-            defaultValue="0.30"
-            className="w-full rounded-xl border border-kaffee-100 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaffee-500"
-          />
-          <p className="mt-1 text-xs text-kaffee-700/70">
-            Änderbar später, beeinflusst die nächste Abrechnung.
+            <div>
+              <label htmlFor="paypal_handle" className="block text-sm font-medium text-gray-700 mb-1">
+                PayPal.me Handle
+              </label>
+              <input
+                id="paypal_handle"
+                name="paypal_handle"
+                type="text"
+                placeholder="z. B. deinname"
+                required
+                disabled={isPending}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+              <p className="text-xs text-gray-500 mt-1">Dein PayPal.me Username (z. B. paypal.me/deinname)</p>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold py-2 rounded-lg hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Wird erstellt...
+                </>
+              ) : (
+                "Kaffeekasse erstellen"
+              )}
+            </Button>
+          </form>
+
+          <p className="text-xs text-gray-500 text-center mt-4">
+            Nach dem Erstellen bekommst du einen QR-Code, den du neben die Kaffeemaschine hängst. Fertig! 🎉
           </p>
         </div>
-
-        <Button type="submit" size="lg" className="w-full">
-          Gruppe anlegen →
-        </Button>
-      </form>
-    </main>
+      </Card>
+    </div>
   );
 }
