@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function NewGroupError({
   error,
@@ -9,41 +9,46 @@ export default function NewGroupError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const isKeyInvalid = error.message === "SUPABASE_KEY_INVALID";
+  const router = useRouter();
 
   return (
-    <main className="min-h-screen px-6 py-12 max-w-md mx-auto">
-      <a
-        href="/"
-        className="text-sm text-kaffee-700 hover:underline inline-block mb-4"
-      >
-        ← zurück
-      </a>
-      <div className="bg-white/80 rounded-2xl p-6 border border-kaffee-100">
-        <h1 className="text-2xl font-bold text-kaffee-900 mb-3">
-          Das hat gerade nicht geklappt.
-        </h1>
-        {isKeyInvalid ? (
-          <p className="text-kaffee-700 mb-6">
-            Die Verbindung zur Datenbank ist aktuell nicht konfiguriert.
-            Der Betreiber wurde benachrichtigt — versuch's in ein paar
-            Minuten nochmal.
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white p-4 flex items-center justify-center">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
+          <h1 className="text-2xl font-bold text-red-600 mb-2">Fehler</h1>
+          <p className="text-gray-600 mb-6">
+            Beim Erstellen der Gruppe ist ein Fehler aufgetreten.
           </p>
-        ) : (
-          <p className="text-kaffee-700 mb-6">
-            Wir konnten deine Gruppe nicht anlegen. Probier es nochmal —
-            und wenn's weiter hakt, schreib uns kurz.
-          </p>
-        )}
-        {error.digest && (
-          <p className="text-xs text-kaffee-700/60 mb-4 font-mono">
-            Ref: {error.digest}
-          </p>
-        )}
-        <Button onClick={reset} size="lg" className="w-full">
-          Nochmal versuchen
-        </Button>
+
+          <details className="mb-6 p-3 bg-gray-100 rounded text-xs text-gray-700 overflow-auto max-h-24">
+            <summary className="cursor-pointer font-semibold mb-2">
+              Technische Details
+            </summary>
+            <code>{error.message || "Unbekannter Fehler"}</code>
+            {error.digest && (
+              <>
+                <br />
+                <code>Digest: {error.digest}</code>
+              </>
+            )}
+          </details>
+
+          <div className="flex gap-3">
+            <button
+              onClick={reset}
+              className="flex-1 py-2 px-4 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Erneut versuchen
+            </button>
+            <button
+              onClick={() => router.push("/")}
+              className="flex-1 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition-colors"
+            >
+              Startseite
+            </button>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
