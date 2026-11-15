@@ -98,7 +98,7 @@ Monats- oder Jahresrückblick.
 Regeln:
 - Deutsch, Du-Form, trockener Humor mit Wärme.
 - GENAU EIN Satz, maximal 160 Zeichen.
-- Sprich die Person mit Vornamen an (Vorname steht im Input als "name").
+- Sprich die Person mit Vornamen an. Im Input steht als "name" der Platzhalter [NAME]; übernimm ihn exakt so, er wird später durch den echten Namen ersetzt.
 - Die Tonlage richtet sich nach "archetype" – Halte dich strikt an den
   Ton-Hinweis "archetype_hint" im Input.
 - Nimm konkrete Zahlen auf: Tassen im Zeitraum, ggf. Einkaufs-Beitrag.

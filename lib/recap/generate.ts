@@ -18,6 +18,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import type { RecapInput, RecapMember } from "./types";
+import { GROUP_ALIAS, MEMBER_ALIAS, restoreNames } from "./pseudonym";
 import {
   FUN_FACT_SYSTEM_PROMPT,
   PERSONAL_COMMENT_SYSTEM_PROMPT,
@@ -124,7 +125,12 @@ export async function enrichRecapWithClaude(input: RecapInput): Promise<RecapInp
     };
   }
 
-  const groupUserMessage = buildGroupUserMessage(input);
+  // Namen bleiben auf dem Server: KI sieht nur Platzhalter.
+  const groupName = input.group.name;
+  const groupUserMessage = buildGroupUserMessage({
+    ...input,
+    group: { ...input.group, name: GROUP_ALIAS },
+  });
 
   // Gruppen-Calls parallel
   const [titleResult, funFactResult] = await Promise.allSettled([
@@ -144,11 +150,11 @@ export async function enrichRecapWithClaude(input: RecapInput): Promise<RecapInp
 
   const headline_title =
     titleResult.status === "fulfilled" && titleResult.value
-      ? titleResult.value
+      ? restoreNames(titleResult.value, { group: groupName })
       : fallbackTitle(input);
   const fun_fact =
     funFactResult.status === "fulfilled" && funFactResult.value
-      ? funFactResult.value
+      ? restoreNames(funFactResult.value, { group: groupName })
       : fallbackFunFact(input);
 
   // Persönliche Kommentare – parallel für alle Mitglieder
@@ -164,7 +170,7 @@ export async function enrichRecapWithClaude(input: RecapInput): Promise<RecapInp
         client,
         system: PERSONAL_COMMENT_SYSTEM_PROMPT,
         user: buildMemberUserMessage(
-          m,
+          { ...m, name: MEMBER_ALIAS },
           avgCoffees,
           input.stats.total_coffees,
           input.period.label_de,
@@ -177,7 +183,9 @@ export async function enrichRecapWithClaude(input: RecapInput): Promise<RecapInp
   const enrichedMembers: RecapMember[] = input.members.map((m, i) => {
     const res = memberResults[i];
     const text =
-      res.status === "fulfilled" && res.value ? res.value : fallbackMemberComment(m);
+      res.status === "fulfilled" && res.value
+        ? restoreNames(res.value, { group: groupName, member: m.name })
+        : fallbackMemberComment(m);
     return { ...m, personal_comment: text };
   });
 
