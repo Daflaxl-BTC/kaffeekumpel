@@ -83,15 +83,6 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      <footer className="relative z-10 px-6 py-8 text-center text-sm text-kaffee-800">
-        Fragen?{" "}
-        <a
-          className="underline underline-offset-4 hover:text-kaffee-900"
-          href="mailto:felix.bredl@gmail.com"
-        >
-          felix.bredl@gmail.com
-        </a>
-      </footer>
     </main>
   );
 }
