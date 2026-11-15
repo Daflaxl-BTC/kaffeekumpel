@@ -24,6 +24,7 @@ import {
   TITLE_SYSTEM_PROMPT,
   buildGroupUserMessage,
   buildMemberUserMessage,
+  insertMemberName,
 } from "./prompts";
 
 const MODEL = "claude-haiku-4-5";
@@ -177,7 +178,9 @@ export async function enrichRecapWithClaude(input: RecapInput): Promise<RecapInp
   const enrichedMembers: RecapMember[] = input.members.map((m, i) => {
     const res = memberResults[i];
     const text =
-      res.status === "fulfilled" && res.value ? res.value : fallbackMemberComment(m);
+      res.status === "fulfilled" && res.value
+        ? insertMemberName(res.value, m.name)
+        : fallbackMemberComment(m);
     return { ...m, personal_comment: text };
   });
 

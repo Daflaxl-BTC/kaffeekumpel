@@ -44,9 +44,9 @@ export default function LandingPage() {
         {/* Trust-Signals direkt im Sichtbereich statt versteckt im Footer */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
           <TrustPill>Kein Login</TrustPill>
-          <TrustPill>DSGVO-konform</TrustPill>
-          <TrustPill>EU-Hosting</TrustPill>
-          <TrustPill>Open Source</TrustPill>
+          <TrustPill>Daten in Frankfurt</TrustPill>
+          <TrustPill>Kein Tracking</TrustPill>
+          <TrustPill>Kostenlos</TrustPill>
         </div>
       </section>
 
@@ -99,6 +99,15 @@ export default function LandingPage() {
           href="/impressum"
         >
           Impressum
+        </Link>
+        <span className="mx-2" aria-hidden>
+          ·
+        </span>
+        <Link
+          className="underline underline-offset-4 hover:text-kaffee-900"
+          href="/datenschutz"
+        >
+          Datenschutz
         </Link>
       </footer>
     </main>

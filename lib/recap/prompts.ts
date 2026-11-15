@@ -98,7 +98,8 @@ Monats- oder Jahresrückblick.
 Regeln:
 - Deutsch, Du-Form, trockener Humor mit Wärme.
 - GENAU EIN Satz, maximal 160 Zeichen.
-- Sprich die Person mit Vornamen an (Vorname steht im Input als "name").
+- Sprich die Person mit dem Platzhalter {{NAME}} an, genau so geschrieben. Den echten
+  Namen kennst du nicht; er wird nach deiner Antwort eingesetzt.
 - Die Tonlage richtet sich nach "archetype" – Halte dich strikt an den
   Ton-Hinweis "archetype_hint" im Input.
 - Nimm konkrete Zahlen auf: Tassen im Zeitraum, ggf. Einkaufs-Beitrag.
@@ -107,7 +108,7 @@ Regeln:
 - Nicht shamen, nicht moralisieren. Wir wollen, dass Leute den Recap gerne teilen.
 - Kein Vergleich mit anderen Personen ("mehr als X"), nur mit der Gruppe im Schnitt.
 
-Input: JSON mit name, archetype, archetype_hint, coffees, spend_cents,
+Input: JSON mit archetype, archetype_hint, coffees, spend_cents,
 group_avg_coffees, period_label, share_of_group_coffees (0..1).
 
 Gib EXAKT eine Zeile aus. Nichts davor, nichts danach.`;
@@ -117,13 +118,13 @@ Gib EXAKT eine Zeile aus. Nichts davor, nichts danach.`;
 // ---------------------------------------------------------------------------
 
 /**
- * Gruppe-weite User-Message für Titel + Fun-Fact. Bewusst anonymisiert –
- * keine Namen, damit Claude keine ausstreut.
+ * Gruppe-weite User-Message für Titel + Fun-Fact. Bewusst anonymisiert:
+ * weder Personen- noch Gruppennamen verlassen den Server (Datenminimierung,
+ * Art. 5 Abs. 1 lit. c DSGVO); Gruppennamen enthalten oft Personennamen.
  */
 export function buildGroupUserMessage(input: RecapInput): string {
   const compact = {
     group: {
-      name: input.group.name,
       member_count: input.members.length,
       coffee_price_cents: input.group.coffee_price_cents,
       currency: input.group.currency,
@@ -144,12 +145,24 @@ export function buildGroupUserMessage(input: RecapInput): string {
 }
 
 /**
- * Persönliche User-Message für ein einzelnes Mitglied.
+ * Platzhalter für den Namen in persönlichen Kommentaren. Der echte Name wird
+ * erst nach der Antwort serverseitig eingesetzt (siehe insertMemberName).
+ */
+export const NAME_PLACEHOLDER = "{{NAME}}";
+
+/** Setzt den echten Namen anstelle des Platzhalters ein. */
+export function insertMemberName(text: string, name: string): string {
+  return text.split(NAME_PLACEHOLDER).join(name);
+}
+
+/**
+ * Persönliche User-Message für ein einzelnes Mitglied. Enthält keinen Namen,
+ * nur Kennzahlen; die Anrede läuft über NAME_PLACEHOLDER.
  */
 export function buildMemberUserMessage(
   member: Pick<
     RecapInput["members"][number],
-    "name" | "archetype" | "coffees" | "spend_cents"
+    "archetype" | "coffees" | "spend_cents"
   >,
   groupAvgCoffees: number,
   totalCoffees: number,
@@ -157,7 +170,6 @@ export function buildMemberUserMessage(
 ): string {
   const share = totalCoffees > 0 ? member.coffees / totalCoffees : 0;
   const payload = {
-    name: member.name,
     archetype: member.archetype,
     archetype_hint: ARCHETYPE_HINTS[member.archetype],
     coffees: member.coffees,

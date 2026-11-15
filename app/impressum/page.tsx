@@ -93,6 +93,14 @@ export default function ImpressumPage() {
             eingestellt.
           </p>
         </div>
+
+        <p>
+          Hinweise zum Umgang mit euren Daten stehen in der{" "}
+          <Link className="underline underline-offset-4" href="/datenschutz">
+            Datenschutzerklärung
+          </Link>
+          .
+        </p>
       </section>
     </main>
   );
