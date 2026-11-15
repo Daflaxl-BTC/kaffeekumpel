@@ -45,4 +45,4 @@ Schema und RLS sind bereits eingespielt.
 
 ## Lizenz
 
-Proprietär / intern. Fragen: Felix Bredl — felix.bredl@gmail.com
+Proprietär / intern. Fragen: Felix Ventures — felix.ventures.contact@proton.me

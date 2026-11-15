@@ -87,10 +87,19 @@ export default function LandingPage() {
         Fragen?{" "}
         <a
           className="underline underline-offset-4 hover:text-kaffee-900"
-          href="mailto:felix.bredl@gmail.com"
+          href="mailto:felix.ventures.contact@proton.me"
         >
-          felix.bredl@gmail.com
+          felix.ventures.contact@proton.me
         </a>
+        <span className="mx-2" aria-hidden>
+          ·
+        </span>
+        <Link
+          className="underline underline-offset-4 hover:text-kaffee-900"
+          href="/impressum"
+        >
+          Impressum
+        </Link>
       </footer>
     </main>
   );
