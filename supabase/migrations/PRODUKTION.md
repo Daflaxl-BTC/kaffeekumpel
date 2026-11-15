@@ -15,7 +15,9 @@ Abgefragt am 15.11.2026 über `supabase_migrations.schema_migrations`. Produktio
 | 20260419131538 | security_audit_explicit_deny_policies | fehlt |
 | 20260419151926 | security_audit_events_jwt_scoped | als 20260419090000 |
 | 20260419152521 | events_policy_rls_initplan_fix | als 20260419091000 |
-| (15.11.2026) | members_deny_client_reads | 20261115190000 |
+| 20261115201429 | members_deny_client_reads | als 20261115190000 |
+
+Eingespielt am 15.11.2026 und geprüft: anon und authenticated haben kein SELECT mehr auf `members`, ein REST-Aufruf mit dem öffentlichen Schlüssel endet mit 42501 „permission denied“, der Security-Advisor meldet nichts, Vercel zeigt keine Laufzeitfehler. Server und Realtime sind nicht betroffen (service_role bzw. JWT-Claims auf `events`).
 
 Offen: die fehlenden Dateien aus Produktion ins Repo holen (`supabase link`, dann `supabase migration fetch`), damit ein frisches Setup denselben Stand erreicht. Bis dahin ist Produktion die Quelle der Wahrheit.
 
