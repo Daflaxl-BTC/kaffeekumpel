@@ -1,0 +1,12 @@
+# Installation: siehe docs/HETZNER.md, Abschnitt „Sicherung“.
+[Unit]
+Description=Kaffeekumpel Datenbank-Sicherung
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+# Enthält DATABASE_URL (und optional BACKUP_DIR, KEEP_DAYS). Rechte 600, root.
+EnvironmentFile=/etc/kaffeekumpel/backup.env
+ExecStart=/opt/kaffeekumpel/scripts/hetzner/backup.sh
+Nice=10

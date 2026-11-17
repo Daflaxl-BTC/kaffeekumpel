@@ -30,6 +30,10 @@ ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Dieses Image ist das Hetzner-Image: schaltet die Datenschutzerklärung auf
+# Hetzner/Deutschland um (lib/hosting.ts). Vercel baut ohne Dockerfile.
+ARG HOSTING_PROVIDER=hetzner
+ENV HOSTING_PROVIDER=$HOSTING_PROVIDER
 RUN npm run build
 
 # ---- runner: minimal, non-root ----
@@ -39,6 +43,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV HOSTING_PROVIDER=hetzner
 
 RUN groupadd --system --gid 1001 nodejs \
   && useradd --system --uid 1001 --gid nodejs nextjs

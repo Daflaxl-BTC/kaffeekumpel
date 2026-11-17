@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { privacyHostingText } from "@/lib/hosting";
 
 export const metadata = {
   title: "Datenschutz — Kaffeekumpel",
@@ -21,13 +22,15 @@ function Abschnitt({ titel, children }: { titel: string; children: React.ReactNo
 }
 
 export default function DatenschutzPage() {
+  // Abschnitt 4 hängt vom Betriebsort ab (HOSTING_PROVIDER, siehe lib/hosting.ts).
+  const hosting = privacyHostingText();
   return (
     <main className="min-h-screen px-6 py-12 max-w-2xl mx-auto text-kaffee-900">
       <Link href="/" className="text-sm text-kaffee-700 hover:underline inline-block mb-4">
         ← zurück
       </Link>
       <h1 className="text-3xl font-bold mb-2">Datenschutzerklärung</h1>
-      <p className="text-sm text-kaffee-800 mb-8">Stand: 15. November 2026</p>
+      <p className="text-sm text-kaffee-800 mb-8">Stand: {hosting.stand}</p>
 
       <section className="space-y-8 leading-relaxed">
         <Abschnitt titel="1. Verantwortlicher">
@@ -80,24 +83,9 @@ export default function DatenschutzPage() {
         </Abschnitt>
 
         <Abschnitt titel="4. Hosting und Datenbank">
-          <p>
-            Die Website läuft bei der Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA. Die
-            Serverfunktionen laufen im Rechenzentrum Frankfurt am Main. Beim Aufruf verarbeitet Vercel
-            technisch notwendige Zugriffsdaten wie IP-Adresse, Zeitpunkt, aufgerufene Adresse und
-            Browserangaben, um die Seite auszuliefern und vor Angriffen zu schützen (Art. 6 Abs. 1 lit. f
-            DSGVO). Diese Protokolle bewahrt Vercel nur kurzfristig für Betrieb und Sicherheit auf.
-          </p>
-          <p>
-            Die Daten der Gruppen liegen in einer Datenbank der Supabase Inc. auf Servern in Frankfurt am
-            Main (Region eu-central-1). Für die Live-Aktualisierung der Strichliste verbindet sich euer
-            Browser direkt mit Supabase; dabei sieht Supabase eure IP-Adresse.
-          </p>
-          <p>
-            Beide Anbieter arbeiten als Auftragsverarbeiter nach Art. 28 DSGVO. Weil beide Unternehmen
-            ihren Sitz in den USA haben, ist ein Zugriff aus den USA nicht ausgeschlossen. Grundlage dafür
-            ist der Angemessenheitsbeschluss zum EU-US Data Privacy Framework, soweit der Anbieter dort
-            zertifiziert ist, sonst die EU-Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO).
-          </p>
+          {hosting.paragraphs.map((text) => (
+            <p key={text.slice(0, 32)}>{text}</p>
+          ))}
         </Abschnitt>
 
         <Abschnitt titel="5. Monatsrückblick (PDF)">
