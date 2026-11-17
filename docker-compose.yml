@@ -9,7 +9,8 @@
 #   1) git clone --depth 1 https://github.com/supabase/supabase
 #      cd supabase/docker && cp .env.example .env  (Secrets setzen!)
 #      docker compose up -d   → legt Netz `supabase_default` an
-#   2) Migrationen einspielen: supabase/migrations/*.sql gegen Postgres
+#   2) Schema und Daten aus Produktion übernehmen:
+#      scripts/hetzner/migrate-data.sh (siehe docs/HETZNER.md)
 #   3) hier: docker compose up -d --build
 #
 # Secrets kommen aus .env (NICHT committen — siehe .env.example).
@@ -22,9 +23,14 @@ services:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     restart: unless-stopped
+    # Alle Variablen aus .env (auch Impressum, IOS_APP_ID); die Liste darunter
+    # macht die wichtigsten sichtbar und setzt die Hetzner-Festwerte.
+    env_file: .env
     environment:
       # serverseitig (nie ins Client-Bundle):
       SESSION_SECRET: ${SESSION_SECRET}
+      # Server → Kong im Docker-Netz; nach außen ist nur Realtime offen (Caddyfile).
+      SUPABASE_INTERNAL_URL: http://kong:8000
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -51,6 +57,8 @@ services:
       - caddy_config:/config
     networks:
       - web
+      # für api.kaffeekumpel.eu → kong:8000 (nur /realtime/v1)
+      - supabase_default
 
 volumes:
   caddy_data:

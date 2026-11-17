@@ -1,0 +1,11 @@
+[Unit]
+Description=Kaffeekumpel Datenbank-Sicherung jede Nacht
+
+[Timer]
+OnCalendar=*-*-* 03:17:00
+# Verpasste Läufe (Server war aus) beim nächsten Start nachholen.
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

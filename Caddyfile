@@ -1,8 +1,26 @@
 # Caddy: Auto-TLS (Let's Encrypt) für kaffeekumpel.eu → Next.js-App.
 # apple-app-site-association muss als application/json ohne Suffix ausliefern —
 # das erledigt der Next.js-Route-Handler (app/.well-known/...), Caddy reicht nur durch.
+#
+# Datenschutz: Hier steht bewusst kein `log`-Block. Caddy schreibt dann kein
+# Zugriffsprotokoll, und genau das verspricht die Datenschutzerklärung
+# (lib/hosting.ts, Variante hetzner). Wer Logging einschaltet, ändert den Text mit.
 
 kaffeekumpel.eu, www.kaffeekumpel.eu {
 	encode zstd gzip
 	reverse_proxy app:3000
+}
+
+# Supabase nach außen: nur Realtime. Der Browser abonniert darüber die
+# Strichliste (NEXT_PUBLIC_SUPABASE_URL=https://api.kaffeekumpel.eu).
+# REST, Studio und alles andere bleiben im Docker-Netz; der Server spricht
+# Kong direkt über SUPABASE_INTERNAL_URL=http://kong:8000 an.
+api.kaffeekumpel.eu {
+	@realtime path /realtime/v1/*
+	handle @realtime {
+		reverse_proxy kong:8000
+	}
+	handle {
+		respond 404
+	}
 }
