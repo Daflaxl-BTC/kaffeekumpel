@@ -45,7 +45,7 @@ export default function LandingPage() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
           <TrustPill>Kein Login</TrustPill>
           <TrustPill>Daten in Frankfurt</TrustPill>
-          <TrustPill>Kein Tracking</TrustPill>
+          <TrustPill>Keine Tracking-Cookies</TrustPill>
           <TrustPill>Kostenlos</TrustPill>
         </div>
       </section>

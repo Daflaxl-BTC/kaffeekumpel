@@ -7,7 +7,7 @@ export const metadata = {
 
 /**
  * Datenschutzerklärung. Beschreibt die Datenflüsse, wie sie im Code stehen
- * (Stand 15.11.2026). Jede Änderung an Datenflüssen (neuer Dienst, neue
+ * (Stand 18.11.2026). Jede Änderung an Datenflüssen (neuer Dienst, neue
  * Felder, Magic Link, E-Mail-Versand) muss hier nachgezogen werden.
  */
 
@@ -27,7 +27,7 @@ export default function DatenschutzPage() {
         ← zurück
       </Link>
       <h1 className="text-3xl font-bold mb-2">Datenschutzerklärung</h1>
-      <p className="text-sm text-kaffee-800 mb-8">Stand: 15. November 2026</p>
+      <p className="text-sm text-kaffee-800 mb-8">Stand: 18. November 2026</p>
 
       <section className="space-y-8 leading-relaxed">
         <Abschnitt titel="1. Verantwortlicher">
@@ -75,7 +75,8 @@ export default function DatenschutzPage() {
             Cookie namens <code>kk_session</code>. Es enthält in signierter Form den Gruppencode und eure
             Mitglieds-Kennung, ist für Skripte nicht lesbar und läuft nach 90 Tagen ab. Es ist für den
             Dienst unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG); eine Einwilligung ist dafür nicht
-            nötig. Andere Cookies, Analyse- oder Werbewerkzeuge setzen wir nicht ein.
+            nötig. Weitere Cookies und Werbewerkzeuge setzen wir nicht ein; zur cookielosen
+            Reichweitenmessung siehe Abschnitt 5.
           </p>
         </Abschnitt>
 
@@ -100,7 +101,27 @@ export default function DatenschutzPage() {
           </p>
         </Abschnitt>
 
-        <Abschnitt titel="5. Monatsrückblick (PDF)">
+        <Abschnitt titel="5. Reichweitenmessung (Vercel Web Analytics)">
+          <p>
+            Um zu sehen, wie viele Menschen Kaffeekumpel nutzen und welche Seiten aufgerufen werden,
+            setzen wir Vercel Web Analytics der Vercel Inc. (Anschrift siehe Abschnitt 4) ein. Dabei
+            werden keine Cookies gesetzt und nichts im Speicher eures Browsers abgelegt. Erfasst
+            werden die aufgerufene Seite, die verweisende Seite, das Land sowie Browser,
+            Betriebssystem und Gerätetyp. Um Besuche zählen zu können, bildet Vercel aus der Anfrage
+            einen Hashwert, der nach 24 Stunden verworfen wird; die IP-Adresse wird dafür nicht
+            gespeichert. Wir sehen nur zusammengefasste Zahlen und können daraus niemanden
+            erkennen.
+          </p>
+          <p>
+            Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist, die
+            Nutzung des Dienstes zu verstehen und ihn zu verbessern. Vercel arbeitet dabei als
+            Auftragsverarbeiter; für die Übermittlung in die USA gilt das in Abschnitt 4 Gesagte. Ihr
+            könnt der Messung widersprechen (Art. 21 DSGVO), etwa per E-Mail; ein Inhaltsblocker im
+            Browser verhindert sie ebenfalls.
+          </p>
+        </Abschnitt>
+
+        <Abschnitt titel="6. Monatsrückblick (PDF)">
           <p>
             Wenn ein Mitglied den Rückblick als PDF abruft, lassen wir Überschrift, eine Anekdote und
             kurze persönliche Sätze von einem KI-Modell der Anthropic PBC, 548 Market St, PMB 90375,
@@ -116,7 +137,7 @@ export default function DatenschutzPage() {
           </p>
         </Abschnitt>
 
-        <Abschnitt titel="6. Bezahlen über PayPal">
+        <Abschnitt titel="7. Bezahlen über PayPal">
           <p>
             Kaffeekumpel wickelt keine Zahlungen ab. Bei einer Abrechnung erzeugen wir einen Link auf
             paypal.me mit dem PayPal-Namen der empfangenden Person und dem Betrag. Erst wenn ihr den
@@ -125,7 +146,7 @@ export default function DatenschutzPage() {
           </p>
         </Abschnitt>
 
-        <Abschnitt titel="7. Speicherdauer">
+        <Abschnitt titel="8. Speicherdauer">
           <p>
             Die Daten einer Gruppe speichern wir, solange die Gruppe genutzt wird. Auf Wunsch löschen wir
             eine Gruppe oder einzelne Angaben vollständig; schreibt uns dazu an die oben genannte
@@ -134,7 +155,7 @@ export default function DatenschutzPage() {
           </p>
         </Abschnitt>
 
-        <Abschnitt titel="8. Eure Rechte">
+        <Abschnitt titel="9. Eure Rechte">
           <p>
             Ihr habt das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17),
             Einschränkung der Verarbeitung (Art. 18) und Datenübertragbarkeit (Art. 20). Soweit wir uns
